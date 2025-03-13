@@ -12,7 +12,7 @@ const app = express();
 
 // Connect to MongoDB
 mongoose
-    .connect('mongodb://localhost:27017/dishcovery', {
+    .connect('mongodb+srv://dkclee:Dkclee@clustercomp229.ul6nj.mongodb.net/?retryWrites=true&w=majority&appName=ClusterCOMP229', {
         useNewUrlParser: true,
         useUnifiedTopology: true,
     })
