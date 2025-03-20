@@ -1,62 +1,34 @@
 // backend/routes/recipes.js
 const express = require('express');
 const router = express.Router();
-const Recipe = require('../models/recipe');
+const recipeController = require('../controllers/recipeController');
+const { verifyToken } = require('../middleware/authMiddleware');
 
-// GET /api/recipes/search?ingredients=...&isVegan=true&excludeAllergens=...
-router.get('/search', async (req, res) => {
-    const { ingredients, isVegan, excludeAllergens } = req.query;
-    let query = {};
-
-    if (ingredients) {
-        // Split ingredients by comma and find recipes containing all
-        query.ingredients = { $all: ingredients.split(',').map(i => i.trim()) };
-    }
-    if (isVegan === 'true') {
-        query.isVegan = true;
-    }
-    if (excludeAllergens) {
-        const allergens = excludeAllergens.split(',').map(a => a.trim());
-        query.allergens = { $nin: allergens };
-    }
-
+// Middleware to check if user is the creator or admin
+const isCreatorOrAdmin = async (req, res, next) => {
     try {
-        const recipes = await Recipe.find(query);
-        res.json(recipes);
+        const Recipe = require('../models/recipe'); // Ensure this import works
+        const recipe = await Recipe.findById(req.params.id);
+        if (!recipe) {
+            return res.status(404).json({ msg: 'Recipe not found' });
+        }
+
+        if (recipe.createdBy.toString() === req.user._id || req.user.admin) {
+            next();
+        } else {
+            res.status(403).json({ msg: 'Not authorized to perform this action' });
+        }
     } catch (err) {
+        console.error(err);
         res.status(500).json({ msg: 'Server error' });
     }
-});
+};
 
-// POST /api/recipes (Upload new recipe)
-router.post('/', async (req, res) => {
-    try {
-        const newRecipe = new Recipe(req.body);
-        await newRecipe.save();
-        res.json(newRecipe);
-    } catch (err) {
-        res.status(500).json({ msg: 'Server error' });
-    }
-});
-
-// PUT /api/recipes/:id (Edit existing recipe)
-router.put('/:id', async (req, res) => {
-    try {
-        const updatedRecipe = await Recipe.findByIdAndUpdate(req.params.id, req.body, { new: true });
-        res.json(updatedRecipe);
-    } catch (err) {
-        res.status(500).json({ msg: 'Server error' });
-    }
-});
-
-// DELETE /api/recipes/:id (Delete recipe)
-router.delete('/:id', async (req, res) => {
-    try {
-        await Recipe.findByIdAndDelete(req.params.id);
-        res.json({ msg: 'Recipe deleted' });
-    } catch (err) {
-        res.status(500).json({ msg: 'Server error' });
-    }
-});
+// Routes...
+router.get('/search', recipeController.searchRecipes);
+router.get('/:id', recipeController.getRecipeById);
+router.post('/', verifyToken, recipeController.createRecipe);
+router.put('/:id', verifyToken, isCreatorOrAdmin, recipeController.updateRecipe);
+router.delete('/:id', verifyToken, isCreatorOrAdmin, recipeController.deleteRecipe);
 
 module.exports = router;

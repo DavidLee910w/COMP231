@@ -2,12 +2,38 @@
 const mongoose = require('mongoose');
 const bcrypt = require('bcrypt');
 
+
 const UserSchema = new mongoose.Schema({
-    username: { type: String, required: true, unique: true },
-    password: { type: String, required: true },
-    // Roles: casual, registered, admin, recipeCreator, foodBlogger
-    role: { type: String, enum: ['casual', 'registered', 'admin', 'recipeCreator', 'foodBlogger'], default: 'casual' }
-});
+    email: {
+      type: String,
+      required: true,
+      unique: true,
+      trim: true,
+      lowercase: true
+    },
+    password: {
+      type: String,
+      required: true
+    },
+    admin: {
+      type: Boolean,
+      default: false
+    },
+    createDate: {
+      type: Date,
+      default: Date.now
+    },
+    isDisabled: {
+      type: Boolean,
+      default: false
+    },
+    username: {
+      type: String,
+      required: true,
+      unique: true,
+      trim: true
+    }
+  });
 
 // Encrypt password before saving
 UserSchema.pre('save', async function (next) {
