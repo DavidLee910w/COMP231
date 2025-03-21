@@ -1,6 +1,12 @@
 // backend/models/recipe.js
 const mongoose = require('mongoose');
 
+const CommentSchema = new mongoose.Schema({
+    username: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
+    comment: { type: String, required: true },
+    createdAt: { type: Date, default: Date.now }
+});
+
 const RecipeSchema = new mongoose.Schema({
     title: { type: String, required: true, trim: true },
     description: { type: String, trim: true },
@@ -15,16 +21,10 @@ const RecipeSchema = new mongoose.Schema({
     allergens: [{ type: String, trim: true }],
     servings: { type: Number, required: true },
     commentsEnabled: { type: Boolean, default: true },
-    comments: [{
-        user: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
-        content: { type: String, required: true, trim: true },
-        date: { type: Date, default: Date.now }
-    }],
-    createdBy: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
-    image: { type: String, trim: true },
+    comments: [CommentSchema],
+    createdBy: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
+    image: String,
     createdAt: { type: Date, default: Date.now }
 });
 
-const Recipe = mongoose.model('Recipe', RecipeSchema);
-
-module.exports = Recipe; // Export the model
+module.exports = mongoose.model('Recipe', RecipeSchema);
