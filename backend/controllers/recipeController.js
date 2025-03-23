@@ -88,3 +88,15 @@ exports.getRecipeById = async (req, res) => {
         res.status(500).json({ msg: 'Server error' });
     }
 };
+
+// GET /api/recipes/user (Get all recipes for the authenticated user)
+exports.getUserRecipes = async (req, res) => {
+    try {
+        // req.user is populated by your authentication middleware with the logged-in user's info
+        const recipes = await Recipe.find({ createdBy: req.user._id }).populate('createdBy', 'username');
+        res.json(recipes);
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ msg: 'Server error' });
+    }
+};

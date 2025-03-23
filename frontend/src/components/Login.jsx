@@ -10,7 +10,13 @@ function Login() {
     const handleLogin = async (e) => {
         e.preventDefault();
         try {
+            console.log('Logging in...');
             const res = await axios.post('http://localhost:5000/api/auth/login', { username, password });
+
+            /* Save token to local storage */
+            const { token } = res.data;
+           // Store the token in localStorage
+           localStorage.setItem('token', token);
             setMsg(res.data.msg);
         } catch (err) {
             setMsg(err.response.data.msg || 'Error');
