@@ -74,22 +74,6 @@ exports.deleteRecipe = async (req, res) => {
         res.status(500).json({ msg: 'Server error' });
     }
 };
-
-// GET /api/recipes/:id (Get a single recipe by ID)
-exports.getRecipeById = async (req, res) => {
-    try {
-        const recipe = await Recipe.findById(req.params.id).populate('createdBy', 'username');
-        if (!recipe) {
-            return res.status(404).json({ msg: 'Recipe not found' });
-        }
-        res.json(recipe);
-    } catch (err) {
-        console.error(err);
-        res.status(500).json({ msg: 'Server error' });
-    }
-};
-
-
 // POST /api/recipes/:id/comments  (Add a new comment to the recipe)
 exports.addComment = async (req, res) => {
     const { comment } = req.body;
@@ -154,5 +138,29 @@ exports.deleteComment = async (req, res) => {
         res.status(500).json({ msg: 'Server error' });
     }
 };
+// GET /api/recipes/:id (Get a single recipe by ID)
+exports.getRecipeById = async (req, res) => {
+    try {
+        const recipe = await Recipe.findById(req.params.id).populate('createdBy', 'username');
+        if (!recipe) {
+            return res.status(404).json({ msg: 'Recipe not found' });
+        }
+        res.json(recipe);
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ msg: 'Server error' });
+    }
+};
 
+// GET /api/recipes/user (Get all recipes for the authenticated user)
+exports.getUserRecipes = async (req, res) => {
+    try {
+        // req.user is populated by your authentication middleware with the logged-in user's info
+        const recipes = await Recipe.find({ createdBy: req.user._id }).populate('createdBy', 'username');
+        res.json(recipes);
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ msg: 'Server error' });
+    }
+};
 

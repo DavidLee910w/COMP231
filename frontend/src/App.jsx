@@ -39,6 +39,7 @@ import Login from './components/Login';
 import RecipeSearch from './components/RecipeSearch';
 import RecipeForm from './components/RecipeForm';
 import AdminDashboard from './components/AdminDashboard';
+import RecipeList from './components/RecipeList';
 
 function App() {
   return (
@@ -48,7 +49,9 @@ function App() {
           <Route path="/login" element={<Login />} />
           <Route path="/search" element={<RecipeSearch />} />
           <Route path="/recipe/new" element={<RecipeForm />} />
+          <Route path="/recipe/edit/:id" element={<RecipeForm />} />
           <Route path="/admin" element={<AdminDashboard />} />
+          <Route path="/recipe/list" element={<RecipeList />} />
         </Routes>
       </div>
     </Router>

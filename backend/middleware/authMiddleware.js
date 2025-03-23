@@ -12,6 +12,7 @@ exports.verifyToken = (req, res, next) => {
     try {
         const decoded = jwt.verify(token, process.env.JWT_SECRET);
         req.user = decoded.user; // Attach user data to request
+        console.log("User decoded from token:", req.user);
         next();
     } catch (err) {
         res.status(401).json({ msg: 'Token is not valid' });
