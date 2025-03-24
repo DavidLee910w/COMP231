@@ -1,0 +1,35 @@
+/* temporary css styles for easier navigation; feel free to override */
+/* frontend/src/components/RecipeDetail.css */
+.recipe-detail-container {
+    padding: 20px;
+}
+
+.recipe-title {
+    font-size: 24px;
+    margin-bottom: 10px;
+}
+
+.recipe-section {
+    margin-bottom: 20px;
+}
+
+.recipe-section p {
+    margin: 5px 0;
+}
+
+.recipe-section ul,
+.recipe-section ol {
+    padding-left: 20px;
+}
+
+.comments {
+    margin-top: 20px;
+}
+
+.comments ul {
+    padding-left: 20px;
+}
+
+.comments li {
+    margin-bottom: 6px;
+}
