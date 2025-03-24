@@ -3,12 +3,17 @@ const Recipe = require('../models/recipe');
 
 // GET /api/recipes/search?ingredients=...&isVegan=true&excludeAllergens=...
 exports.searchRecipes = async (req, res) => {
-    const { ingredients, isVegan, excludeAllergens } = req.query;
+    const { searchedItem, isVegan, excludeAllergens } = req.query;
     let query = {};
+    //filtering in ingredient/title/description; case insensitive
+    if (searchedItem) {
+        const keywordList = searchedItem.split(',').map(i => i.trim());
 
-    if (ingredients) {
-        const ingredientList = ingredients.split(',').map(i => i.trim());
-        query['ingredients.name'] = { $in: ingredientList };
+        query.$or = [
+            { 'ingredients.name': { $in: keywordList } },
+            { title: { $regex: searchedItem, $options: 'i' } },
+            { description: { $regex: searchedItem, $options: 'i' } }
+        ];
     }
     if (isVegan === 'true') {
         query.isVegan = true;
@@ -99,8 +104,12 @@ exports.addComment = async (req, res) => {
         });
 
         await recipe.save();
-
-        res.status(201).json({ msg: 'Comment added successfully', comments: recipe.comments });
+        // populate comment usernames again
+        await recipe.populate('comments.username', 'username');
+        res.status(201).json({
+            msg: 'Comment added successfully',
+            comments: recipe.comments
+        });
     } catch (err) {
         console.error(err);
         res.status(500).json({ msg: 'Server error' });
@@ -141,7 +150,9 @@ exports.deleteComment = async (req, res) => {
 // GET /api/recipes/:id (Get a single recipe by ID)
 exports.getRecipeById = async (req, res) => {
     try {
-        const recipe = await Recipe.findById(req.params.id).populate('createdBy', 'username');
+        const recipe = await Recipe.findById(req.params.id)
+            .populate('createdBy', 'username')
+            .populate('comments.username', 'username');
         if (!recipe) {
             return res.status(404).json({ msg: 'Recipe not found' });
         }

@@ -40,6 +40,7 @@ import RecipeSearch from './components/RecipeSearch';
 import RecipeForm from './components/RecipeForm';
 import AdminDashboard from './components/AdminDashboard';
 import RecipeList from './components/RecipeList';
+import RecipeDetail from './components/RecipeDetail';
 
 function App() {
   return (
@@ -52,6 +53,7 @@ function App() {
           <Route path="/recipe/edit/:id" element={<RecipeForm />} />
           <Route path="/admin" element={<AdminDashboard />} />
           <Route path="/recipe/list" element={<RecipeList />} />
+          <Route path="/recipe/:id" element={<RecipeDetail />} />
         </Routes>
       </div>
     </Router>
