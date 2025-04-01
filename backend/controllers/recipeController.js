@@ -4,12 +4,17 @@ const keywordExtractor = require('keyword-extractor');
 
 // GET /api/recipes/search?ingredients=...&isVegan=true&excludeAllergens=...
 exports.searchRecipes = async (req, res) => {
-    const { ingredients, isVegan, excludeAllergens } = req.query;
+    const { searchedItem, isVegan, excludeAllergens } = req.query;
     let query = {};
+    //filtering in ingredient/title/description; case insensitive
+    if (searchedItem) {
+        const keywordList = searchedItem.split(',').map(i => i.trim());
 
-    if (ingredients) {
-        const ingredientList = ingredients.split(',').map(i => i.trim());
-        query['ingredients.name'] = { $in: ingredientList };
+        query.$or = [
+            { 'ingredients.name': { $in: keywordList } },
+            { title: { $regex: searchedItem, $options: 'i' } },
+            { description: { $regex: searchedItem, $options: 'i' } }
+        ];
     }
     if (isVegan === 'true') {
         query.isVegan = true;
@@ -90,21 +95,6 @@ exports.deleteRecipe = async (req, res) => {
     }
 };
 
-// GET /api/recipes/:id (Get a single recipe by ID)
-exports.getRecipeById = async (req, res) => {
-    try {
-        const recipe = await Recipe.findById(req.params.id).populate('createdBy', 'username').populate('comments.username', 'username');
-        if (!recipe) {
-            return res.status(404).json({ msg: 'Recipe not found' });
-        }
-        res.json(recipe);
-    } catch (err) {
-        console.error(err);
-        res.status(500).json({ msg: 'Server error' });
-    }
-};
-
-
 // POST /api/recipes/:id/comments  (Add a new comment to the recipe)
 exports.addComment = async (req, res) => {
     const { comment } = req.body;
@@ -130,8 +120,12 @@ exports.addComment = async (req, res) => {
         });
 
         await recipe.save();
-
-        res.status(201).json({ msg: 'Comment added successfully', comments: recipe.comments });
+        // populate comment usernames again
+        await recipe.populate('comments.username', 'username');
+        res.status(201).json({
+            msg: 'Comment added successfully',
+            comments: recipe.comments
+        });
     } catch (err) {
         console.error(err);
         res.status(500).json({ msg: 'Server error' });
@@ -169,6 +163,22 @@ exports.deleteComment = async (req, res) => {
         res.status(500).json({ msg: 'Server error' });
     }
 };
+// GET /api/recipes/:id (Get a single recipe by ID)
+exports.getRecipeById = async (req, res) => {
+    try {
+        const recipe = await Recipe.findById(req.params.id)
+            .populate('createdBy', 'username')
+            .populate('comments.username', 'username');
+        if (!recipe) {
+            return res.status(404).json({ msg: 'Recipe not found' });
+        }
+        res.json(recipe);
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ msg: 'Server error' });
+    }
+};
+
 
 //auto generate seo tags from title, description and ingredients of recipe
 function generateSEOTagsFromContent(title, description, ingredients) {
@@ -202,5 +212,18 @@ function mergeSeoTags(userInputTags = [], autoTags = []) {
 
     return merged;
 }
+
+
+// GET /api/recipes/user (Get all recipes for the authenticated user)
+exports.getUserRecipes = async (req, res) => {
+    try {
+        // req.user is populated by your authentication middleware with the logged-in user's info
+        const recipes = await Recipe.find({ createdBy: req.user._id }).populate('createdBy', 'username');
+        res.json(recipes);
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ msg: 'Server error' });
+    }
+};
 
 

@@ -19,5 +19,7 @@
     "jsonwebtoken": "^9.0.2",
     "keyword-extractor": "^0.0.28",
     "mongoose": "^8.12.2"
+    "npm": "^11.2.0"
+
   }
 }
