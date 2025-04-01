@@ -39,6 +39,7 @@ import Login from './components/Login';
 import RecipeSearch from './components/RecipeSearch';
 import RecipeForm from './components/RecipeForm';
 import AdminDashboard from './components/AdminDashboard';
+import RecipeDetail from './components/RecipeDetail';
 
 function App() {
   return (
@@ -49,6 +50,7 @@ function App() {
           <Route path="/search" element={<RecipeSearch />} />
           <Route path="/recipe/new" element={<RecipeForm />} />
           <Route path="/admin" element={<AdminDashboard />} />
+          <Route path="/recipe/:id" element={<RecipeDetail />} />
         </Routes>
       </div>
     </Router>

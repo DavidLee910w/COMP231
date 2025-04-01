@@ -1,5 +1,6 @@
 // backend/controllers/recipeController.js
 const Recipe = require('../models/recipe');
+const keywordExtractor = require('keyword-extractor');
 
 // GET /api/recipes/search?ingredients=...&isVegan=true&excludeAllergens=...
 exports.searchRecipes = async (req, res) => {
@@ -30,12 +31,26 @@ exports.searchRecipes = async (req, res) => {
 // POST /api/recipes (Upload new recipe)
 exports.createRecipe = async (req, res) => {
     try {
+        const { title, description, ingredients } = req.body;
+
+        // makesure ingredients is array
+        const safeIngredients = Array.isArray(ingredients) ? ingredients : [];
+
+        const userTags = Array.isArray(req.body.seoTags) ? req.body.seoTags : [];
+
+        const autoTags = generateSEOTagsFromContent(title, description, safeIngredients);
+        const finalTags = mergeSeoTags(userTags, autoTags);
+
         const recipeData = {
             ...req.body,
-            createdBy: req.user._id // Set the creator to the logged-in user from JWT
+            ingredients: safeIngredients,
+            seoTags: finalTags,
+            createdBy: req.user._id
         };
+
         const newRecipe = new Recipe(recipeData);
         await newRecipe.save();
+
         res.status(201).json(newRecipe);
     } catch (err) {
         console.error(err);
@@ -78,7 +93,7 @@ exports.deleteRecipe = async (req, res) => {
 // GET /api/recipes/:id (Get a single recipe by ID)
 exports.getRecipeById = async (req, res) => {
     try {
-        const recipe = await Recipe.findById(req.params.id).populate('createdBy', 'username');
+        const recipe = await Recipe.findById(req.params.id).populate('createdBy', 'username').populate('comments.username', 'username');
         if (!recipe) {
             return res.status(404).json({ msg: 'Recipe not found' });
         }
@@ -154,5 +169,38 @@ exports.deleteComment = async (req, res) => {
         res.status(500).json({ msg: 'Server error' });
     }
 };
+
+//auto generate seo tags from title, description and ingredients of recipe
+function generateSEOTagsFromContent(title, description, ingredients) {
+    const combinedText = [
+        title,
+        description,
+        ...ingredients.map(i => i.name)
+    ].join(' ');
+
+    const autoTags = keywordExtractor.extract(combinedText, {
+        language: 'english',
+        remove_digits: true,
+        return_changed_case: true,
+        remove_duplicates: true
+    });
+
+    const extra = ['recipe', 'cooking', 'food'];
+    return [...new Set([...autoTags, ...extra])];
+}
+
+function mergeSeoTags(userInputTags = [], autoTags = []) {
+    const userTagsSet = new Set(userInputTags.map(tag => tag.toLowerCase().trim()));
+    const merged = [...userTagsSet];
+
+    autoTags.forEach(tag => {
+        const lower = tag.toLowerCase().trim();
+        if (!userTagsSet.has(lower)) {
+            merged.push(lower);
+        }
+    });
+
+    return merged;
+}
 
 
