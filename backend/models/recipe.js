@@ -24,7 +24,8 @@ const RecipeSchema = new mongoose.Schema({
     comments: [CommentSchema],
     createdBy: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
     image: String,
-    createdAt: { type: Date, default: Date.now }
+    createdAt: { type: Date, default: Date.now },
+    seoTags: [{ type: String, trim: true }],
 });
 
 module.exports = mongoose.model('Recipe', RecipeSchema);

@@ -12,7 +12,6 @@ function Login() {
         try {
             console.log('Logging in...');
             const res = await axios.post('http://localhost:5000/api/auth/login', { username, password });
-
             /* Save token and user to local storage */
             const { token } = res.data;
             // Store the token in localStorage

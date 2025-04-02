@@ -1,4 +1,3 @@
-// frontend/src/components/RecipeDetail.jsx
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import axios from 'axios';
@@ -80,30 +79,43 @@ function RecipeDetail() {
                 ))}
             </ol>
 
-            <h3>Comments</h3>
-            <ul>
-                {recipe.comments && recipe.comments.length > 0 ? (
-                    recipe.comments.map((comment) => (
-                        <li key={comment._id}>
-                            {comment.comment} (by {comment.username?.username || comment.username || 'Unknown user'})
-                        </li>
-                    ))
-                ) : (
-                    <p>No comments yet.</p>
-                )}
-            </ul>
+            {recipe.image && (
+                <>
+                <h3>Image:</h3>
+                <img src={recipe.image} alt={recipe.title} width="300" />
+                </>
+            )}
 
-            <div className="comment-form">
+            <h3>SEO Tags:</h3>
+            <div>
+                {recipe.seoTags?.map(tag => (
+                <span key={tag} style={{ marginRight: 8, background: '#eee', padding: '4px 8px' }}>{tag}</span>
+                ))}
+            </div>
+
+            <h3>Comments:</h3>
+            {recipe.comments.length === 0 ? (
+                <p>No comments yet.</p>
+            ) : (
+                <ul>
+                {recipe.comments.map((c) => (
+                    <li key={c._id}>
+                    <strong>{c.username?.username || 'User'}</strong>: {c.comment} ({new Date(c.createdAt).toLocaleString()})
+                    </li>
+                ))}
+                </ul>
+            )}
+
+            <div style={{ marginTop: '2rem' }}>
+                <h4>Add Comment:</h4>
                 <textarea
-                    rows="3"
-                    placeholder="Write a comment..."
-                    value={newComment}
-                    onChange={(e) => setNewComment(e.target.value)}
-                ></textarea>
-                <br />
-                <button onClick={handleCommentSubmit} disabled={commentSubmitting}>
-                    {commentSubmitting ? 'Submitting...' : 'Submit Comment'}
-                </button>
+                rows="3"
+                value={newComment}
+                onChange={(e) => setNewComment(e.target.value)}
+                style={{ width: '100%', marginBottom: '0.5rem' }}
+                />
+                {error && <p style={{ color: 'red' }}>{error}</p>}
+                <button onClick={handleCommentSubmit}>Submit Comment</button>
             </div>
         </div>
     );
