@@ -1,19 +1,52 @@
 //frontend/src/components/RecipeSearch.jsx
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { Link } from 'react-router-dom';
 import './RecipeSearch.css';
+import { useRef } from 'react';
 
 const allergenOptions = ['peanut', 'gluten', 'shellfish', 'dairy', 'soy', 'egg'];
 
 function RecipeSearch() {
-    const [searchedItem, setSearchedItem] = useState(''); //Changed from ingredients to searchedItem
+    const [searchedItem, setSearchedItem] = useState('');
     const [isVegan, setIsVegan] = useState(false);
     const [excludeAllergens, setExcludeAllergens] = useState([]);
     const [recipes, setRecipes] = useState([]);
     const [loading, setLoading] = useState(false);
     const [currentPage, setCurrentPage] = useState(1);
+    const [hasSearched, setHasSearched] = useState(false);
+    const [allTitles, setAllTitles] = useState([]);
+    const [suggestions, setSuggestions] = useState([]);
     const recipesPerPage = 10; //max 10 recipes per page
+    const inputRef = useRef(null);
+
+    // Close suggestions when clicking outside
+    useEffect(() => {
+        const handleClickOutside = (e) => {
+            if (inputRef.current && !inputRef.current.contains(e.target)) {
+                setSuggestions([]);
+            }
+        };
+
+        document.addEventListener('mousedown', handleClickOutside);
+        return () => {
+            document.removeEventListener('mousedown', handleClickOutside);
+        };
+    }, []);
+
+    // Fetch all recipe titles on initial load for autocomplete
+    useEffect(() => {
+        const fetchTitles = async () => {
+            try {
+                const res = await axios.get('http://localhost:5000/api/recipes/titles');
+                console.log('Titles fetched:', res.data);
+                setAllTitles(res.data);
+            } catch (err) {
+                console.error('Failed to fetch titles:', err);
+            }
+        };
+        fetchTitles();
+    }, []);
 
     const handleAllergenChange = (e) => {
         const { value, checked } = e.target;
@@ -24,8 +57,23 @@ function RecipeSearch() {
         }
     };
 
+    const handleInputChange = (e) => {
+        const value = e.target.value;
+        setSearchedItem(value);
+        if (value.length >= 2) {
+            const filtered = allTitles.filter(title =>
+                title.toLowerCase().includes(value.toLowerCase())
+            );
+            setSuggestions(filtered.slice(0, 5));
+        } else {
+            setSuggestions([]);
+        }
+    };
+
     const handleSearch = async () => {
         setLoading(true);
+        setHasSearched(true); // Mark that a search was performed
+        setSuggestions([]); // Clear suggestions after searching
         try {
             const res = await axios.get('http://localhost:5000/api/recipes/search', {
                 params: {
@@ -49,7 +97,10 @@ function RecipeSearch() {
         setExcludeAllergens([]);
         setRecipes([]);
         setCurrentPage(1);
+        setHasSearched(false); // Reset search state
+        setSuggestions([]);
     };
+
     //pagination
     const indexOfLast = currentPage * recipesPerPage;
     const indexOfFirst = indexOfLast - recipesPerPage;
@@ -64,13 +115,32 @@ function RecipeSearch() {
         <div className="search-container">
             <h2>Search Recipes</h2>
 
-            <input
-                type="text"
-                placeholder="Search by keyword"
-                value={searchedItem}
-                onChange={(e) => setSearchedItem(e.target.value)}
-                className="search-input"
-            />
+            {/* Search input + suggestions box */}
+            <div ref={inputRef} className="search-wrapper">
+                <input
+                    type="text"
+                    placeholder="Search by keyword"
+                    value={searchedItem}
+                    onChange={handleInputChange}
+                    className="search-input"
+                />
+                {suggestions.length > 0 && (
+                    <ul className="suggestion-list">
+                        {suggestions.map((s, i) => (
+                            <li
+                                key={i}
+                                onClick={() => {
+                                    setSearchedItem(s);
+                                    setSuggestions([]);
+                                }}
+                                className="suggestion-item"
+                            >
+                                {s}
+                            </li>
+                        ))}
+                    </ul>
+                )}
+            </div>
 
             <label className="checkbox-label">
                 <input
@@ -106,7 +176,7 @@ function RecipeSearch() {
             <div className="results-container">
                 {loading ? (
                     <p>Loading recipes...</p>
-                ) : currentRecipes.length === 0 ? (
+                ) : hasSearched && currentRecipes.length === 0 ? (
                     <p>No recipes found.</p>
                 ) : (
                     currentRecipes.map((recipe) => (

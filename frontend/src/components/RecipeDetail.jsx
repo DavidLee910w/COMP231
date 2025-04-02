@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import axios from 'axios';
 import './RecipeDetail.css';
+import { useNavigate } from 'react-router-dom';
 
 function RecipeDetail() {
     const { id } = useParams();
@@ -10,6 +11,7 @@ function RecipeDetail() {
     const [error, setError] = useState(null);
     const [newComment, setNewComment] = useState('');
     const [commentSubmitting, setCommentSubmitting] = useState(false);
+    const [isSaved, setIsSaved] = useState(false);
 
     useEffect(() => {
         const fetchRecipe = async () => {
@@ -22,8 +24,32 @@ function RecipeDetail() {
                 setLoading(false);
             }
         };
+        const checkIfSaved = async () => {
+            try {
+                const token = localStorage.getItem('token');
+                const res = await axios.get(`http://localhost:5000/api/recipes/${id}/isSaved`, {
+                    headers: { Authorization: `Bearer ${token}` }
+                });
+                setIsSaved(res.data.isSaved);
+            } catch (err) {
+                console.error('Could not check if saved:', err);
+            }
+        };
         fetchRecipe();
+        checkIfSaved();
     }, [id]);
+
+    const handleToggleSave = async () => {
+        try {
+            const token = localStorage.getItem('token');
+            await axios.post(`http://localhost:5000/api/recipes/save/${id}`, {}, {
+                headers: { Authorization: `Bearer ${token}` }
+            });
+            setIsSaved(prev => !prev);
+        } catch (err) {
+            console.error('Failed to toggle save:', err);
+        }
+    };
 
     const handleCommentSubmit = async () => {
         if (!newComment.trim()) return;
@@ -51,6 +77,8 @@ function RecipeDetail() {
         }
     };
 
+    const navigate = useNavigate();
+
     if (loading) return <p>Loading...</p>;
     if (error) return <p>{error}</p>;
     if (!recipe) return <p>Recipe not found.</p>;
@@ -58,6 +86,9 @@ function RecipeDetail() {
     return (
         <div className="recipe-detail-container">
             <h2>{recipe.title}</h2>
+            <button onClick={handleToggleSave}>
+                {isSaved ? 'Unsave Recipe' : 'Save Recipe'}
+            </button>
             <p>Description: {recipe.description || 'N/A'}</p>
             <p>Prep Time: {recipe.prepTime} mins</p>
             <p>Cook Time: {recipe.cookTime} mins</p>
@@ -81,15 +112,15 @@ function RecipeDetail() {
 
             {recipe.image && (
                 <>
-                <h3>Image:</h3>
-                <img src={recipe.image} alt={recipe.title} width="300" />
+                    <h3>Image:</h3>
+                    <img src={recipe.image} alt={recipe.title} width="300" />
                 </>
             )}
 
             <h3>SEO Tags:</h3>
             <div>
                 {recipe.seoTags?.map(tag => (
-                <span key={tag} style={{ marginRight: 8, background: '#eee', padding: '4px 8px' }}>{tag}</span>
+                    <span key={tag} style={{ marginRight: 8, background: '#eee', padding: '4px 8px' }}>{tag}</span>
                 ))}
             </div>
 
@@ -98,24 +129,29 @@ function RecipeDetail() {
                 <p>No comments yet.</p>
             ) : (
                 <ul>
-                {recipe.comments.map((c) => (
-                    <li key={c._id}>
-                    <strong>{c.username?.username || 'User'}</strong>: {c.comment} ({new Date(c.createdAt).toLocaleString()})
-                    </li>
-                ))}
+                    {recipe.comments.map((c) => (
+                        <li key={c._id}>
+                            <strong>{c.username?.username || 'User'}</strong>: {c.comment} ({new Date(c.createdAt).toLocaleString()})
+                        </li>
+                    ))}
                 </ul>
             )}
 
             <div style={{ marginTop: '2rem' }}>
                 <h4>Add Comment:</h4>
                 <textarea
-                rows="3"
-                value={newComment}
-                onChange={(e) => setNewComment(e.target.value)}
-                style={{ width: '100%', marginBottom: '0.5rem' }}
+                    rows="3"
+                    value={newComment}
+                    onChange={(e) => setNewComment(e.target.value)}
+                    style={{ width: '100%', marginBottom: '0.5rem' }}
                 />
                 {error && <p style={{ color: 'red' }}>{error}</p>}
                 <button onClick={handleCommentSubmit}>Submit Comment</button>
+            </div>
+            <div style={{ marginTop: '2rem' }}>
+                <button onClick={() => navigate('/search')}>
+                    ← Back to Search
+                </button>
             </div>
         </div>
     );
