@@ -1,7 +1,7 @@
 // frontend/src/components/Login.js
 import React, { useState } from 'react';
-import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
 
 function Login() {
     const [username, setUsername] = useState('');
@@ -12,8 +12,8 @@ function Login() {
     const handleLogin = async (e) => {
         e.preventDefault();
         try {
-            console.log('Logging in...');
             const res = await axios.post('http://localhost:5000/api/auth/login', { username, password });
+
             /* Save token and user to local storage */
             const { token, user } = res.data;
             // Store the token in localStorage
@@ -34,26 +34,32 @@ function Login() {
     };
 
     return (
-        <div>
-            <h2>Login</h2>
-            <form onSubmit={handleLogin}>
-                <input
-                    type="text"
-                    placeholder="Username"
-                    value={username}
-                    onChange={(e) => setUsername(e.target.value)}
-                />
-                <br />
-                <input
-                    type="password"
-                    placeholder="Password"
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                />
-                <br />
-                <button type="submit">Login</button>
-            </form>
-            <p>{msg}</p>
+        <div className="login-page">
+            <div className="login-container">
+                <h2>Welcome to Dishcovery</h2>
+                <form onSubmit={handleLogin} className="login-form">
+                    <div className="form-group">
+                        <input
+                            type="text"
+                            placeholder="Username"
+                            value={username}
+                            onChange={(e) => setUsername(e.target.value)}
+                            required
+                        />
+                    </div>
+                    <div className="form-group">
+                        <input
+                            type="password"
+                            placeholder="Password"
+                            value={password}
+                            onChange={(e) => setPassword(e.target.value)}
+                            required
+                        />
+                    </div>
+                    {msg && <div className="error-message">{msg}</div>}
+                    <button type="submit" className="login-button">Login</button>
+                </form>
+            </div>
         </div>
     );
 }

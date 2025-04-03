@@ -17,10 +17,20 @@
 
 .allergen-filter {
     margin: 10px 0;
+    text-align: center;
+}
+
+.checkbox-group {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    justify-content: center;
 }
 
 .checkbox-group label {
-    margin-right: 10px;
+    display: flex;
+    align-items: center;
+    gap: 5px;
 }
 
 .button-group {
