@@ -158,7 +158,9 @@ function RecipeDetail() {
             </Helmet>
             <div className="recipe-detail-container">
                 <h2 className="recipe-title">{recipe.title}</h2>
-                
+                <button onClick={handleToggleSave}>
+                {isSaved ? 'Unsave Recipe' : 'Save Recipe'}
+                </button>
                 <div className="recipe-meta">
                     <p><strong>Prep Time:</strong> {recipe.prepTime} mins</p>
                     <p><strong>Cook Time:</strong> {recipe.cookTime} mins</p>

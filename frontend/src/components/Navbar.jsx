@@ -22,6 +22,7 @@ function Navbar() {
                     <>
                         <Link to="/recipe/new" className="nav-item">Add Recipe</Link>
                         <Link to="/recipe/list" className="nav-item">My Recipes</Link>
+                        <Link to="/saved" className="nav-item">Saved Recipes</Link>
                         <button onClick={handleLogout} className="nav-item logout-btn">Logout</button>
                     </>
                 ) : (
