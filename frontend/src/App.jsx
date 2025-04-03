@@ -42,18 +42,26 @@ import AdminDashboard from './components/AdminDashboard';
 import RecipeList from './components/RecipeList';
 import RecipeDetail from './components/RecipeDetail';
 import Register from './components/Register';
+import ProtectedRoute from './components/ProtectedRoute';
 
 function App() {
   return (
     <Router>
       <div>
         <Routes>
-          <Route path ="/register" element={<Register />} />
+          <Route path="/register" element={<Register />} />
           <Route path="/login" element={<Login />} />
           <Route path="/search" element={<RecipeSearch />} />
           <Route path="/recipe/new" element={<RecipeForm />} />
           <Route path="/recipe/edit/:id" element={<RecipeForm />} />
-          <Route path="/admin" element={<AdminDashboard />} />
+          <Route
+            path="/admin"
+            element={
+              <ProtectedRoute>
+                <AdminDashboard />
+              </ProtectedRoute>
+            }
+          />
           <Route path="/recipe/list" element={<RecipeList />} />
           <Route path="/recipe/:id" element={<RecipeDetail />} />
         </Routes>
