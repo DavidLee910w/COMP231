@@ -2,7 +2,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
-import { useNavigate } from 'react-router-dom';
 
 function Login() {
     const [username, setUsername] = useState('');
@@ -57,7 +56,7 @@ function Login() {
                             required
                         />
                     </div>
-                    {error && <div className="error-message">{error}</div>}
+                    {msg && <div className="error-message">{msg}</div>}
                     <button type="submit" className="login-button">Login</button>
                 </form>
             </div>

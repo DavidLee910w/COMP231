@@ -58,8 +58,9 @@ function App() {
             <Route path="/recipe/list" element={<RecipeList />} />
             <Route path="/recipe/:id" element={<RecipeDetail />} />
             <Route path="/" element={<RecipeSearch />} />
-          <Route path="/saved" element={<SavedRecipes />} />
-        </Routes>
+            <Route path="/saved" element={<SavedRecipes />} />
+          </Routes>
+        </div>
       </div>
     </Router>
   );
