@@ -3,6 +3,7 @@ const express = require('express');
 const router = express.Router();
 const recipeController = require('../controllers/recipeController');
 const { verifyToken } = require('../middleware/authMiddleware');
+const upload = require('../middleware/upload');
 
 // Middleware to check if user is the creator or admin
 const isCreatorOrAdmin = async (req, res, next) => {
@@ -28,9 +29,13 @@ const isCreatorOrAdmin = async (req, res, next) => {
 //router.get('/user', recipeController.getUserRecipes);
 router.get('/user', verifyToken, recipeController.getUserRecipes);
 router.get('/search', recipeController.searchRecipes);
-router.get('/:id', recipeController.getRecipeById);
-router.post('/', verifyToken, recipeController.createRecipe);
-router.put('/:id', verifyToken, isCreatorOrAdmin, recipeController.updateRecipe);
+router.get('/saved', verifyToken, recipeController.getSavedRecipes);
+router.get('/:id/isSaved', verifyToken, recipeController.isRecipeSaved);
+router.post('/save/:recipeId', verifyToken, recipeController.toggleSaveRecipe);
+router.post('/', verifyToken, upload.single('image'), recipeController.createRecipe);
+router.post('/:id/comments', verifyToken, recipeController.addComment);
+router.delete('/:recipeId/comments/:commentId', verifyToken, recipeController.deleteComment);
+router.put('/:id', verifyToken, isCreatorOrAdmin, upload.single('image'), recipeController.updateRecipe);
 router.delete('/:id', verifyToken, isCreatorOrAdmin, recipeController.deleteRecipe);
 router.post('/:id/comments', verifyToken, recipeController.addComment);
 router.delete('/:recipeId/comments/:commentId', verifyToken, recipeController.deleteComment);
