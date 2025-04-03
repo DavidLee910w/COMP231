@@ -4,6 +4,7 @@ import axios from 'axios';
 import ReactMarkdown from 'react-markdown';
 import { Helmet } from 'react-helmet';
 import './RecipeDetail.css';
+import { useNavigate } from 'react-router-dom';
 
 function RecipeDetail() {
     const { id } = useParams();
@@ -12,6 +13,7 @@ function RecipeDetail() {
     const [error, setError] = useState(null);
     const [newComment, setNewComment] = useState('');
     const [commentSubmitting, setCommentSubmitting] = useState(false);
+    const [isSaved, setIsSaved] = useState(false);
 
     useEffect(() => {
         const fetchRecipe = async () => {
@@ -24,8 +26,32 @@ function RecipeDetail() {
                 setLoading(false);
             }
         };
+        const checkIfSaved = async () => {
+            try {
+                const token = localStorage.getItem('token');
+                const res = await axios.get(`http://localhost:5000/api/recipes/${id}/isSaved`, {
+                    headers: { Authorization: `Bearer ${token}` }
+                });
+                setIsSaved(res.data.isSaved);
+            } catch (err) {
+                console.error('Could not check if saved:', err);
+            }
+        };
         fetchRecipe();
+        checkIfSaved();
     }, [id]);
+
+    const handleToggleSave = async () => {
+        try {
+            const token = localStorage.getItem('token');
+            await axios.post(`http://localhost:5000/api/recipes/save/${id}`, {}, {
+                headers: { Authorization: `Bearer ${token}` }
+            });
+            setIsSaved(prev => !prev);
+        } catch (err) {
+            console.error('Failed to toggle save:', err);
+        }
+    };
 
     const handleCommentSubmit = async () => {
         if (!newComment.trim()) return;
@@ -52,6 +78,8 @@ function RecipeDetail() {
             setCommentSubmitting(false);
         }
     };
+
+    const navigate = useNavigate();
 
     if (loading) return <p>Loading...</p>;
     if (error) return <p>{error}</p>;

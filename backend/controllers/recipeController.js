@@ -1,20 +1,15 @@
 // backend/controllers/recipeController.js
 const Recipe = require('../models/recipe');
 const keywordExtractor = require('keyword-extractor');
+const User = require('../models/user');
 
 // GET /api/recipes/search?ingredients=...&isVegan=true&excludeAllergens=...
 exports.searchRecipes = async (req, res) => {
     const { searchedItem, isVegan, excludeAllergens } = req.query;
     let query = {};
-    //filtering in ingredient/title/description; case insensitive
+    //filtering in title; case insensitive
     if (searchedItem) {
-        const keywordList = searchedItem.split(',').map(i => i.trim());
-
-        query.$or = [
-            { 'ingredients.name': { $in: keywordList } },
-            { title: { $regex: searchedItem, $options: 'i' } },
-            { description: { $regex: searchedItem, $options: 'i' } }
-        ];
+        query.title = { $regex: searchedItem, $options: 'i' };
     }
     if (isVegan === 'true') {
         query.isVegan = true;
@@ -226,4 +221,80 @@ exports.getUserRecipes = async (req, res) => {
     }
 };
 
+
+//saved recipes of the user
+// POST /api/users/save/:recipeId (save or save a recipe)
+exports.toggleSaveRecipe = async (req, res) => {
+    const userId = req.user._id;
+    const recipeId = req.params.recipeId;
+
+    try {
+        const user = await User.findById(userId);
+        if (!user) return res.status(404).json({ msg: 'User not found' });
+
+        const alreadySaved = user.savedRecipes.includes(recipeId);
+        if (alreadySaved) {
+            user.savedRecipes.pull(recipeId);
+        } else {
+            user.savedRecipes.push(recipeId);
+        }
+
+        await user.save();
+        res.json({ msg: alreadySaved ? 'Recipe unsaved' : 'Recipe saved' });
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ msg: 'Server error' });
+    }
+};
+
+// GET /api/users/saved (get all saved recipes for the authenticated user)
+exports.getSavedRecipes = async (req, res) => {
+    try {
+        console.log('Getting saved recipes for user ID:', req.user._id);
+
+        const user = await User.findById(req.user._id).populate({
+            path: 'savedRecipes',
+            populate: { path: 'createdBy', select: 'username' }
+        });
+
+        if (!user) {
+            console.log('User not found!');
+            return res.status(404).json({ msg: 'User not found' });
+        }
+
+        console.log('Saved recipes found:', user.savedRecipes.length);
+
+        res.json(user.savedRecipes);
+    } catch (err) {
+        console.error('🔥 Error in getSavedRecipes:', err);
+        res.status(500).json({ msg: 'Server error' });
+    }
+};
+
+// GET /api/recipes/titles - Return all recipe titles (used for search suggestions)
+exports.getRecipeTitles = async (req, res) => {
+    try {
+        const recipes = await Recipe.find({}, 'title');
+        const titles = recipes.map(r => r.title);
+        res.json(titles);
+    } catch (err) {
+        console.error('Error fetching recipe titles:', err);
+        res.status(500).json({ msg: 'Server error' });
+    }
+};
+
+exports.isRecipeSaved = async (req, res) => {
+    try {
+        const user = await User.findById(req.user._id);
+        const recipeId = req.params.id;
+
+        if (!user) return res.status(404).json({ msg: 'User not found' });
+
+        const isSaved = user.savedRecipes.map(id => id.toString()).includes(recipeId);
+        res.json({ isSaved });
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ msg: 'Server error' });
+    }
+};
 

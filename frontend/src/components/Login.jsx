@@ -2,22 +2,35 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
 
 function Login() {
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
-    const [error, setError] = useState('');
+    const [msg, setMsg] = useState('');
     const navigate = useNavigate();
 
     const handleLogin = async (e) => {
         e.preventDefault();
         try {
             const res = await axios.post('http://localhost:5000/api/auth/login', { username, password });
-            const { token } = res.data;
+
+            /* Save token and user to local storage */
+            const { token, user } = res.data;
+            // Store the token in localStorage
             localStorage.setItem('token', token);
-            navigate('/search'); // Redirect to search page after successful login
+            //save the user after login
+            localStorage.setItem('user', JSON.stringify(user));
+            setMsg(res.data.msg);
+            // Redirect to the admin page if the user is an admin, otherwise redirect to the search page
+            if (user.admin) {
+                navigate('/admin');
+            } else {
+                navigate('/search');
+            }
+
         } catch (err) {
-            setError(err.response?.data?.msg || 'Login failed. Please try again.');
+            setMsg(err.response.data.msg || 'Login failed');
         }
     };
 
