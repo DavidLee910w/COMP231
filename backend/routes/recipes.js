@@ -27,13 +27,16 @@ const isCreatorOrAdmin = async (req, res, next) => {
 // Routes...
 //router.get('/user', recipeController.getUserRecipes);
 router.get('/user', verifyToken, recipeController.getUserRecipes);
+router.get('/titles', recipeController.getRecipeTitles);//for fetching recipe titles in search suggestions
 router.get('/search', recipeController.searchRecipes);
-router.get('/:id', recipeController.getRecipeById);
+router.get('/saved', verifyToken, recipeController.getSavedRecipes);
+router.get('/:id/isSaved', verifyToken, recipeController.isRecipeSaved);
+router.post('/save/:recipeId', verifyToken, recipeController.toggleSaveRecipe);
 router.post('/', verifyToken, recipeController.createRecipe);
-router.put('/:id', verifyToken, isCreatorOrAdmin, recipeController.updateRecipe);
-router.delete('/:id', verifyToken, isCreatorOrAdmin, recipeController.deleteRecipe);
 router.post('/:id/comments', verifyToken, recipeController.addComment);
 router.delete('/:recipeId/comments/:commentId', verifyToken, recipeController.deleteComment);
-
+router.put('/:id', verifyToken, isCreatorOrAdmin, recipeController.updateRecipe);
+router.delete('/:id', verifyToken, isCreatorOrAdmin, recipeController.deleteRecipe);
+router.get('/:id', recipeController.getRecipeById);
 
 module.exports = router;

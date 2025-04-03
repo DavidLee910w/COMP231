@@ -2,19 +2,30 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { Link } from 'react-router-dom';
 import './AdminDashboard.css'; // Add custom styles here
+import { useNavigate } from 'react-router-dom';
+
 
 function AdminDashboard() {
     const [users, setUsers] = useState([]);
     const [recipes, setRecipes] = useState([]);
     const [error, setError] = useState('');
+    const navigate = useNavigate();
+    const user = JSON.parse(localStorage.getItem('user') || 'null');
+    const token = localStorage.getItem('token');
+    if (user === null) return <p>Loading...</p>;
 
     useEffect(() => {
-        fetchUsers();
-        fetchRecipes();
-    }, []);
+        if (!user?.admin) {
+            navigate('/');//redirect to main page "/" if user is not admin
+        } else {
+            fetchUsers();
+            fetchRecipes();
+        }
+    }, [user]);
 
     const fetchUsers = async () => {
         try {
+
             const token = localStorage.getItem('token'); // Retrieve the token
             const res = await axios.get('http://localhost:5000/api/admin/users', {
                 headers: {
@@ -25,6 +36,7 @@ function AdminDashboard() {
         } catch (err) {
             console.error(err);
             setError('Failed to fetch users. Please ensure you are logged in as an admin.');
+
         }
     };
 
@@ -55,6 +67,12 @@ function AdminDashboard() {
         } catch (err) {
             console.error(err);
             setError('Failed to delete recipe.');
+            await axios.delete('http://localhost:5000/api/admin/recipes/${id}', {
+                headers: {
+                    Authorization: `Bearer ${token}`
+                }
+            });
+            fetchRecipes();
         }
     };
 

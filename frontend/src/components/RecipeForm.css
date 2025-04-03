@@ -1,0 +1,171 @@
+/* Reset global styles */
+body {
+    display: block !important;
+    margin: 0;
+    padding: 0;
+}
+
+/* Reset root container styles */
+#root {
+    max-width: none !important;
+    padding: 0 !important;
+    width: 100% !important;
+}
+
+/* Page wrapper: centered + background + full width */
+.page-wrapper {
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    min-height: calc(100vh - 64px);
+    padding: 2rem;
+    background-color: #f8f9fb;
+    box-sizing: border-box;
+    width: 100%;
+}
+  
+/* Form main container */
+.recipe-form-container {
+    width: 100%;
+    max-width: 800px;
+    background-color: #fff;
+    padding: 3rem;
+    border-radius: 12px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+    font-family: 'Segoe UI', sans-serif;
+    margin-top: 1rem;
+}
+
+/* Form title */
+.recipe-form-container h2 {
+    text-align: center;
+    color: #333;
+    margin-bottom: 2rem;
+    font-size: 1.8rem;
+}
+
+/* Form styles */
+.recipe-form {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+/* Form group styles */
+.form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+/* Input field styles */
+.form-group input[type="text"],
+.form-group input[type="number"] {
+    width: 100%;
+    padding: 0.75rem 1rem;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    font-size: 1rem;
+    transition: all 0.2s ease;
+}
+
+/* Input focus styles */
+.form-group input:focus {
+    border-color: #6c63ff;
+    box-shadow: 0 0 0 2px rgba(108, 99, 255, 0.15);
+    outline: none;
+}
+
+/* Checkbox group styles */
+.checkbox-group {
+    flex-direction: row;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.checkbox-group label {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    cursor: pointer;
+}
+
+/* SimpleMDE editor container */
+.editor-container {
+    margin-bottom: 1rem;
+}
+
+/* SimpleMDE editor style overrides */
+.recipe-editor .EasyMDEContainer {
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.recipe-editor .EasyMDEContainer .CodeMirror {
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    padding: 0.5rem;
+    min-height: 200px;
+    font-family: inherit;
+    font-size: 1rem;
+    line-height: 1.5;
+}
+
+.recipe-editor .editor-toolbar {
+    border: 1px solid #ddd;
+    border-bottom: none;
+    border-radius: 8px 8px 0 0;
+    background-color: #f8f9fb;
+    opacity: 1;
+}
+
+.recipe-editor .editor-toolbar button {
+    color: #333;
+}
+
+.recipe-editor .editor-toolbar button:hover {
+    background-color: #e9ecef;
+    border-color: #ddd;
+}
+
+.recipe-editor .editor-toolbar.disabled-for-preview button:not(.no-disable) {
+    opacity: 0.5;
+}
+
+.recipe-editor .editor-preview {
+    background-color: #fff;
+    padding: 1rem;
+    border: 1px solid #ddd;
+    border-radius: 0 0 8px 8px;
+}
+
+/* Submit button styles */
+.submit-button {
+    background-color: #6c63ff;
+    color: white;
+    border: none;
+    padding: 1rem;
+    border-radius: 8px;
+    font-size: 1.1rem;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    margin-top: 1rem;
+}
+
+.submit-button:hover {
+    background-color: #5449d6;
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+    .recipe-form-container {
+        padding: 1.5rem;
+        margin: 1rem;
+    }
+    
+    .form-group input[type="text"],
+    .form-group input[type="number"] {
+        padding: 0.6rem 0.8rem;
+    }
+}
+  
