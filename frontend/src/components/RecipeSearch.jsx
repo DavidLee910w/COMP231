@@ -2,6 +2,7 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 import { Link } from 'react-router-dom';
+import { Helmet } from 'react-helmet-async';
 import './RecipeSearch.css';
 
 const allergenOptions = ['peanut', 'gluten', 'shellfish', 'dairy', 'soy', 'egg'];
@@ -62,6 +63,15 @@ function RecipeSearch() {
 
     return (
         <div className="search-container">
+            <Helmet>
+                <title>Search Recipes | Dishcovery</title>
+                <meta name="description" content="Search through our collection of recipes. Filter by ingredients, dietary preferences, and allergens to find the perfect recipe for you." />
+                <meta name="keywords" content="recipe search, food search, cooking, allergen-free recipes, vegan recipes" />
+                <meta property="og:title" content="Search Recipes | Dishcovery" />
+                <meta property="og:type" content="website" />
+                <link rel="canonical" href="https://your-domain.com/search" />
+            </Helmet>
+            
             <h2>Search Recipes</h2>
 
             <input

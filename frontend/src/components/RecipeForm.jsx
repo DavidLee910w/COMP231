@@ -1,6 +1,9 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import SimpleMDE from 'react-simplemde-editor';
+import 'easymde/dist/easymde.min.css';
+import './RecipeForm.css';
 
 function RecipeForm() {
     const { id } = useParams(); // Get recipe ID from URL
@@ -16,6 +19,20 @@ function RecipeForm() {
     const [servings, setServings] = useState(null);
     const [cookTime, setCookTime] = useState(null);
     const [prepTime, setPrepTime] = useState(null);
+
+    // SimpleMDE options
+    const editorOptions = React.useMemo(() => ({
+        autofocus: false,
+        spellChecker: false,
+        placeholder: "Write your recipe instructions here...(each line is a step)",
+        status: false,
+        toolbar: ["bold", "italic", "heading", "|", "unordered-list", "ordered-list", "|", "preview", "guide"],
+        initialValue: instructions,
+    }), []);
+
+    const handleInstructionsChange = useCallback((value) => {
+        setInstructions(value);
+    }, []);
 
     useEffect(() => {
         if (id) {
@@ -61,8 +78,8 @@ function RecipeForm() {
             ingredients: parseIngredients(ingredients),
             steps: instructions.split('\n').map(step => step.trim()),
             isVegan,
-            allergens: allergens.split(',').map(item => item.trim()),
-            seoTags: seoTags.split(',').map(tag => tag.trim()),
+            allergens: allergens.split(',').map(item => item.trim()).filter(item => item !== ''),
+            seoTags: seoTags.split(',').map(tag => tag.trim()).filter(tag => tag !== ''),
             commentsEnabled,
             servings,
             cookTime,
@@ -89,21 +106,106 @@ function RecipeForm() {
     };
 
     return (
-        <div>
-            <h2>{id ? 'Edit' : 'Upload'} Recipe</h2>
-            <form onSubmit={handleSubmit}>
-                <input type="text" placeholder="Title" value={title} onChange={(e) => setTitle(e.target.value)} required /><br />
-                <input type="number" placeholder="Servings" value={servings} onChange={(e) => setServings(e.target.value)} required /><br />
-                <input type="number" placeholder="Cook Time (in minutes)" value={cookTime} onChange={(e) => setCookTime(e.target.value)} required /><br />
-                <input type="number" placeholder="Prep Time (in minutes)" value={prepTime} onChange={(e) => setPrepTime(e.target.value)} required /><br />
-                <input type="text" placeholder="Ingredients (Ingredient: Quantity, Ingredient: Quantity, ...)" value={ingredients} onChange={(e) => setIngredients(e.target.value)} required /><br />
-                <textarea placeholder="Instructions" value={instructions} onChange={(e) => setInstructions(e.target.value)}></textarea><br />
-                <label><input type="checkbox" checked={isVegan} onChange={(e) => setIsVegan(e.target.checked)} /> Vegan</label><br />
-                <input type="text" placeholder="Allergens (comma separated)" value={allergens} onChange={(e) => setAllergens(e.target.value)} /><br />
-                <input type="text" placeholder="SEO Tags (comma separated)" value={seoTags} onChange={(e) => setSeoTags(e.target.value)} /><br />
-                <label><input type="checkbox" checked={commentsEnabled} onChange={(e) => setCommentsEnabled(e.target.checked)} /> Enable Comments</label><br />
-                <button type="submit">{id ? 'Update' : 'Upload'}</button>
-            </form>
+        <div className="page-wrapper">
+            <div className="recipe-form-container">
+                <h2>{id ? 'Edit' : 'Upload'} Recipe</h2>
+                <form onSubmit={handleSubmit} className="recipe-form">
+                    <div className="form-group">
+                        <input
+                            type="text"
+                            placeholder="Title"
+                            value={title}
+                            onChange={(e) => setTitle(e.target.value)}
+                            required
+                        />
+                    </div>
+                    <div className="form-group">
+                        <input
+                            type="number"
+                            placeholder="Servings"
+                            value={servings}
+                            onChange={(e) => setServings(e.target.value)}
+                            required
+                        />
+                    </div>
+                    <div className="form-group">
+                        <input
+                            type="number"
+                            placeholder="Cook Time (in minutes)"
+                            value={cookTime}
+                            onChange={(e) => setCookTime(e.target.value)}
+                            required
+                        />
+                    </div>
+                    <div className="form-group">
+                        <input
+                            type="number"
+                            placeholder="Prep Time (in minutes)"
+                            value={prepTime}
+                            onChange={(e) => setPrepTime(e.target.value)}
+                            required
+                        />
+                    </div>
+                    <div className="form-group">
+                        <input
+                            type="text"
+                            placeholder="Ingredients (Ingredient: Quantity, Ingredient: Quantity, ...)"
+                            value={ingredients}
+                            onChange={(e) => setIngredients(e.target.value)}
+                            required
+                        />
+                    </div>
+                    <div className="form-group editor-container">
+                        <SimpleMDE
+                            value={instructions}
+                            onChange={setInstructions}
+                            options={editorOptions}
+                        />
+                    </div>
+                    <div className="form-group checkbox-group">
+                        <label>
+                            <input
+                                type="checkbox"
+                                checked={isVegan}
+                                onChange={(e) => setIsVegan(e.target.checked)}
+                            />
+                            Vegan
+                        </label>
+                    </div>
+                    <div className="form-group">
+                        <input
+                            type="text"
+                            placeholder="Allergens (comma separated)"
+                            value={allergens}
+                            onChange={(e) => setAllergens(e.target.value)}
+                        />
+                    </div>
+                    <div className="form-group">
+                        <input
+                            type="text"
+                            placeholder="SEO Tags (e.g. italian, pasta, main course, dinner, quick meal)"
+                            value={seoTags}
+                            onChange={(e) => setSeoTags(e.target.value)}
+                        />
+                        <small className="form-text text-muted">
+                            add tags that are relevant to the recipe
+                        </small>
+                    </div>
+                    <div className="form-group checkbox-group">
+                        <label>
+                            <input
+                                type="checkbox"
+                                checked={commentsEnabled}
+                                onChange={(e) => setCommentsEnabled(e.target.checked)}
+                            />
+                            Enable Comments
+                        </label>
+                    </div>
+                    <button type="submit" className="submit-button">
+                        {id ? 'Update' : 'Upload'}
+                    </button>
+                </form>
+            </div>
         </div>
     );
 }
