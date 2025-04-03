@@ -41,12 +41,14 @@ import RecipeForm from './components/RecipeForm';
 import AdminDashboard from './components/AdminDashboard';
 import RecipeList from './components/RecipeList';
 import RecipeDetail from './components/RecipeDetail';
+import Register from './components/Register';
 
 function App() {
   return (
     <Router>
       <div>
         <Routes>
+          <Route path ="/register" element={<Register />} />
           <Route path="/login" element={<Login />} />
           <Route path="/search" element={<RecipeSearch />} />
           <Route path="/recipe/new" element={<RecipeForm />} />
