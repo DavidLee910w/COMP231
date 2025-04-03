@@ -92,11 +92,12 @@ exports.deleteRecipe = async (req, res) => {
 
 // POST /api/recipes/:id/comments  (Add a new comment to the recipe)
 exports.addComment = async (req, res) => {
-    const { comment } = req.body;
+    const { comment, rating } = req.body;
     const userId = req.user._id;
 
-    if (!comment || comment.trim() === '') {
-        return res.status(400).json({ msg: 'Comment is required' });
+    // At least a comment or rating is required
+    if ((!comment || comment.trim() === '') && (!rating || rating < 1)) {
+        return res.status(400).json({ msg: 'Comment or rating is required' });
     }
 
     try {
@@ -109,16 +110,25 @@ exports.addComment = async (req, res) => {
             return res.status(403).json({ msg: 'Comments are disabled for this recipe' });
         }
 
-        recipe.comments.push({
-            username: userId,
-            comment: comment.trim()
-        });
+        const newComment = {
+            username: userId
+        };
+
+        if (comment && comment.trim() !== '') {
+            newComment.comment = comment.trim();
+        }
+
+        if (rating && rating >= 1 && rating <= 5) {
+            newComment.rating = rating;
+        }
+
+        recipe.comments.push(newComment);
 
         await recipe.save();
         // populate comment usernames again
         await recipe.populate('comments.username', 'username');
         res.status(201).json({
-            msg: 'Comment added successfully',
+            msg: 'Review added successfully',
             comments: recipe.comments
         });
     } catch (err) {
