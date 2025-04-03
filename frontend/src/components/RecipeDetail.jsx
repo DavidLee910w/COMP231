@@ -6,6 +6,36 @@ import { Helmet } from 'react-helmet';
 import './RecipeDetail.css';
 import { useNavigate } from 'react-router-dom';
 
+// Star rating component
+const StarRating = ({ rating, onRatingChange }) => {
+    const [hover, setHover] = useState(null);
+    
+    return (
+        <div className="star-rating">
+            {[...Array(5)].map((star, index) => {
+                const ratingValue = index + 1;
+                return (
+                    <label key={index}>
+                        <input 
+                            type="radio" 
+                            name="rating" 
+                            value={ratingValue} 
+                            onClick={() => onRatingChange(ratingValue)}
+                        />
+                        <span 
+                            className={`star ${ratingValue <= (hover || rating) ? 'filled' : ''}`}
+                            onMouseEnter={() => setHover(ratingValue)}
+                            onMouseLeave={() => setHover(null)}
+                        >
+                            ★
+                        </span>
+                    </label>
+                );
+            })}
+        </div>
+    );
+};
+
 function RecipeDetail() {
     const { id } = useParams();
     const [recipe, setRecipe] = useState(null);
@@ -14,6 +44,10 @@ function RecipeDetail() {
     const [newComment, setNewComment] = useState('');
     const [commentSubmitting, setCommentSubmitting] = useState(false);
     const [isSaved, setIsSaved] = useState(false);
+    const [rating, setRating] = useState(0);
+    const [currentPage, setCurrentPage] = useState(1);
+    const commentsPerPage = 5;
+    const navigate = useNavigate();
 
     useEffect(() => {
         const fetchRecipe = async () => {
@@ -53,14 +87,18 @@ function RecipeDetail() {
         }
     };
 
+    const handleRatingChange = (value) => {
+        setRating(value);
+    };
+
     const handleCommentSubmit = async () => {
-        if (!newComment.trim()) return;
+        if (!newComment.trim() && rating === 0) return;
         setCommentSubmitting(true);
         try {
             const token = localStorage.getItem('token');
             await axios.post(
                 `http://localhost:5000/api/recipes/${id}/comments`,
-                { comment: newComment },
+                { comment: newComment, rating: rating },
                 {
                     headers: {
                         Authorization: `Bearer ${token}`,
@@ -72,6 +110,8 @@ function RecipeDetail() {
             const updatedRecipe = await axios.get(`http://localhost:5000/api/recipes/${id}`);
             setRecipe(updatedRecipe.data);
             setNewComment('');
+            setRating(0);
+            setCurrentPage(1); // Reset to first page to show the newly added comment
         } catch (err) {
             console.error('Failed to submit comment:', err);
         } finally {
@@ -79,11 +119,36 @@ function RecipeDetail() {
         }
     };
 
-    const navigate = useNavigate();
+    const handleBackToSearch = () => {
+        navigate('/search');
+    };
+
+    // Function to handle pagination
+    const handlePageChange = (pageNumber) => {
+        setCurrentPage(pageNumber);
+    };
 
     if (loading) return <p>Loading...</p>;
     if (error) return <p>{error}</p>;
     if (!recipe) return <p>Recipe not found.</p>;
+
+    // Sort comments, newest first
+    const sortedComments = [...recipe.comments].sort((a, b) => 
+        new Date(b.createdAt) - new Date(a.createdAt)
+    );
+
+    // Pagination logic
+    const indexOfLastComment = currentPage * commentsPerPage;
+    const indexOfFirstComment = indexOfLastComment - commentsPerPage;
+    const currentComments = sortedComments.slice(indexOfFirstComment, indexOfLastComment);
+    const totalPages = Math.ceil(sortedComments.length / commentsPerPage);
+
+    // Calculate average rating
+    const hasRatings = recipe.comments && recipe.comments.some(c => c.rating > 0);
+    const avgRating = hasRatings 
+        ? (recipe.comments.reduce((sum, comment) => sum + (comment.rating || 0), 0) / 
+          recipe.comments.filter(c => c.rating > 0).length).toFixed(1)
+        : 0;
 
     const metaDescription = `${recipe.title} - ${recipe.isVegan ? 'Vegan Recipe' : 'Recipe'} with prep time ${recipe.prepTime} mins and cook time ${recipe.cookTime} mins. Serves ${recipe.servings}. ${recipe.ingredients.map(ing => ing.name).join(', ')}.`;
     const keywords = [...(recipe.seoTags || []), recipe.title, 'recipe', 'cooking', recipe.isVegan ? 'vegan' : ''].filter(Boolean).join(', ');
@@ -150,17 +215,41 @@ function RecipeDetail() {
                         },
                         "aggregateRating": {
                             "@type": "AggregateRating",
-                            "ratingValue": "5",
-                            "ratingCount": "1"
+                            "ratingValue": hasRatings ? avgRating : "5",
+                            "ratingCount": hasRatings ? recipe.comments.filter(c => c.rating > 0).length : "1"
                         }
                     })}
                 </script>
             </Helmet>
             <div className="recipe-detail-container">
+                <div className="recipe-actions">
+                    <button className="back-button" onClick={handleBackToSearch}>
+                        ← Back to Search
+                    </button>
+                    <button 
+                        className={`save-button ${isSaved ? 'saved' : ''}`} 
+                        onClick={handleToggleSave}
+                    >
+                        {isSaved ? 'Unsave' : 'Save Recipe'}
+                    </button>
+                </div>
+                
                 <h2 className="recipe-title">{recipe.title}</h2>
-                <button onClick={handleToggleSave}>
-                {isSaved ? 'Unsave Recipe' : 'Save Recipe'}
-                </button>
+                
+                {hasRatings && (
+                    <div className="recipe-rating">
+                        <div className="star-display">
+                            {[...Array(5)].map((_, index) => (
+                                <span key={index} className={`star ${index < Math.round(avgRating) ? 'filled' : ''}`}>
+                                    ★
+                                </span>
+                            ))}
+                        </div>
+                        <span className="rating-value">{avgRating}/5</span>
+                        <span className="rating-count">({recipe.comments.filter(c => c.rating > 0).length} {recipe.comments.filter(c => c.rating > 0).length === 1 ? 'rating' : 'ratings'})</span>
+                    </div>
+                )}
+                
                 <div className="recipe-meta">
                     <p><strong>Prep Time:</strong> {recipe.prepTime} mins</p>
                     <p><strong>Cook Time:</strong> {recipe.cookTime} mins</p>
@@ -202,34 +291,75 @@ function RecipeDetail() {
                 </div>
 
                 <div className="comments-section">
-                    <h3>Comments</h3>
+                    <h3>Ratings & Comments</h3>
                     {recipe.comments.length === 0 ? (
-                        <p>No comments yet.</p>
+                        <p>No ratings or comments yet. Be the first to rate this recipe!</p>
                     ) : (
-                        <ul className="comments-list">
-                            {recipe.comments.map((c) => (
-                                <li key={c._id} className="comment">
-                                    <strong>{c.username?.username || 'User'}</strong>
-                                    <span className="comment-date">{new Date(c.createdAt).toLocaleString()}</span>
-                                    <p>{c.comment}</p>
-                                </li>
-                            ))}
-                        </ul>
+                        <>
+                            <ul className="comments-list">
+                                {currentComments.map((c) => (
+                                    <li key={c._id} className="comment">
+                                        <div className="comment-header">
+                                            <div className="user-rating">
+                                                <strong>{c.username?.username || 'User'}</strong>
+                                                {c.rating > 0 && (
+                                                    <div className="comment-rating">
+                                                        {[...Array(5)].map((_, index) => (
+                                                            <span key={index} className={`star ${index < c.rating ? 'filled' : ''}`}>
+                                                                ★
+                                                            </span>
+                                                        ))}
+                                                    </div>
+                                                )}
+                                            </div>
+                                            <span className="comment-date">{new Date(c.createdAt).toLocaleString()}</span>
+                                        </div>
+                                        {c.comment && <p>{c.comment}</p>}
+                                    </li>
+                                ))}
+                            </ul>
+
+                            {totalPages > 1 && (
+                                <div className="comments-pagination">
+                                    <button 
+                                        onClick={() => handlePageChange(currentPage - 1)}
+                                        disabled={currentPage === 1}
+                                        className="page-button"
+                                    >
+                                        &laquo; Prev
+                                    </button>
+                                    <span className="page-info">
+                                        {currentPage} of {totalPages}
+                                    </span>
+                                    <button 
+                                        onClick={() => handlePageChange(currentPage + 1)}
+                                        disabled={currentPage === totalPages}
+                                        className="page-button"
+                                    >
+                                        Next &raquo;
+                                    </button>
+                                </div>
+                            )}
+                        </>
                     )}
 
                     <div className="comment-form">
-                        <h4>Add Comment</h4>
+                        <h4>Rate & Review This Recipe</h4>
+                        <div className="rating-input">
+                            <label>Your Rating:</label>
+                            <StarRating rating={rating} onRatingChange={handleRatingChange} />
+                        </div>
                         <textarea
                             value={newComment}
                             onChange={(e) => setNewComment(e.target.value)}
-                            placeholder="Write your comment here..."
+                            placeholder="Write your review here (optional if rating)"
                             rows="3"
                         />
                         <button 
                             onClick={handleCommentSubmit}
-                            disabled={commentSubmitting}
+                            disabled={commentSubmitting || (newComment.trim() === '' && rating === 0)}
                         >
-                            {commentSubmitting ? 'Submitting...' : 'Submit Comment'}
+                            {commentSubmitting ? 'Submitting...' : 'Submit Rating & Review'}
                         </button>
                     </div>
                 </div>
