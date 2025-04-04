@@ -2,9 +2,9 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 1rem 2rem;
+    padding: 1rem 3rem;
     background-color: white;
-    box-shadow: 0 2px 4px var(--shadow-color);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
     position: fixed;
     top: 0;
     left: 0;
@@ -15,6 +15,10 @@
 .navbar-brand {
     font-size: 1.5rem;
     font-weight: bold;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    /* Add spacing between the icon and text */
 }
 
 .navbar-brand a {
@@ -27,6 +31,12 @@
     color: var(--primary-hover);
 }
 
+.navbar-icon {
+    width: 32px;
+    height: 32px;
+    object-fit: contain;
+}
+
 .navbar-menu {
     display: flex;
     gap: 1.5rem;
@@ -37,11 +47,14 @@
     color: var(--text-color);
     text-decoration: none;
     font-size: 1rem;
+    padding: 0.5rem 1rem;
+    border-radius: 4px;
     transition: color 0.3s ease;
 }
 
 .nav-item:hover {
-    color: var(--primary-color);
+    background-color: var(--primary-color);
+    color: white;
 }
 
 .logout-btn {

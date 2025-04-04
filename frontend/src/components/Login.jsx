@@ -39,18 +39,22 @@ function Login() {
                 <h2>Welcome to Dishcovery</h2>
                 <form onSubmit={handleLogin} className="login-form">
                     <div className="form-group">
+                        <label htmlFor="username">Username:</label>
                         <input
                             type="text"
-                            placeholder="Username"
+                            id="username"
+                            placeholder="Enter your username"
                             value={username}
                             onChange={(e) => setUsername(e.target.value)}
                             required
                         />
                     </div>
                     <div className="form-group">
+                        <label htmlFor="password">Password:</label>
                         <input
                             type="password"
-                            placeholder="Password"
+                            id="password"
+                            placeholder="Enter your password"
                             value={password}
                             onChange={(e) => setPassword(e.target.value)}
                             required

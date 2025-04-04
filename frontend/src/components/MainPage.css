@@ -4,38 +4,64 @@
 }
 
 .hero {
-    background-color: #f8f9fb;
-    padding: 4rem 2rem;
+    background-color: rgba(255, 255, 255, 0.7);
+    /* Add transparency to the background */
+    background-image: url('../assets/hero-background.png');
+    /* Add the background image */
+    background-size: cover;
+    /* Ensure the image covers the entire section */
+    background-position: center;
+    /* Center the image */
+    background-repeat: no-repeat;
+    /* Prevent tiling */
+    background-blend-mode: overlay;
+    /* Blend the background image with the color */
+    padding: 5rem 2rem;
+    text-align: center;
+    color: var(--text-color);
+    /* Ensure text is readable on the background */
     border-radius: 12px;
     margin-bottom: 2rem;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    /* Add subtle shadow for depth */
 }
 
 .hero h1 {
-    font-size: 2.5rem;
-    color: #333;
+    font-size: 3rem;
+    color: #ff8c00;
+    /* Change to orange tone for better contrast */
     margin-bottom: 1rem;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+    /* Subtle shadow for readability */
 }
 
 .hero p {
     font-size: 1.2rem;
-    color: #555;
+    color: #333;
+    /* Darker text for better readability */
     margin-bottom: 2rem;
+    text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.2);
+    /* Subtle shadow for readability */
 }
 
 .hero-buttons .button {
     display: inline-block;
     margin: 0 1rem;
     padding: 0.75rem 1.5rem;
-    background-color: #6c63ff;
+    background-color: rgba(255, 140, 0, 0.9);
+    /* Slightly transparent orange */
     color: white;
     border-radius: 8px;
     text-decoration: none;
     font-size: 1rem;
-    transition: background-color 0.3s ease;
+    transition: background-color 0.3s ease, transform 0.2s ease;
 }
 
 .hero-buttons .button:hover {
-    background-color: #5449d6;
+    background-color: rgba(230, 126, 0, 0.9);
+    /* Darker orange */
+    transform: translateY(-2px);
+    /* Add hover effect */
 }
 
 .features {
@@ -56,21 +82,37 @@
 }
 
 .feature-item {
-    background-color: #fff;
-    padding: 1.5rem;
-    border-radius: 8px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    background: linear-gradient(135deg, #ff8c00, #e67e00);
+    /* Add gradient background */
+    color: white;
+    /* Change text color to white for contrast */
+    padding: 2rem;
+    border-radius: 12px;
+    /* Increase border radius for a softer look */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    /* Add a stronger shadow for depth */
     max-width: 300px;
     text-align: left;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    border: none;
+    /* Remove border */
+}
+
+.feature-item:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
+    /* Enhance hover shadow */
 }
 
 .feature-item h3 {
     font-size: 1.5rem;
-    color: #333;
+    color: white;
+    /* Ensure header text is white */
     margin-bottom: 0.5rem;
 }
 
 .feature-item p {
     font-size: 1rem;
-    color: #555;
+    color: #fdfdfd;
+    /* Slightly lighter text for better readability */
 }
