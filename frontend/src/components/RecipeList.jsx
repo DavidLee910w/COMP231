@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { Link, useNavigate } from 'react-router-dom';
+import './RecipeList.css'; // Import the CSS file for styling
 
 function RecipeList() {
     const [recipes, setRecipes] = useState([]);
@@ -40,23 +41,27 @@ function RecipeList() {
     };
 
     return (
-        <div>
-            <h1>Your Recipes</h1>
-            <button onClick={() => navigate('/recipe/new')}>Add New Recipe</button>
+        <div className="recipe-list-page">
+            <div className="recipe-list-container">
+                <h1>Your Recipes</h1>
+                <button onClick={() => navigate('/recipe/new')} className="add-recipe-button">Add New Recipe</button>
 
-            {loading ? (
-                <p>Loading...</p>
-            ) : recipes.length === 0 ? (
-                <p>No recipes found. Try adding one!</p>
-            ) : (
-                recipes.map((recipe) => (
-                    <div key={recipe._id}>
-                        {recipe.title}
-                        <button onClick={() => navigate(`/recipe/edit/${recipe._id}`)}>Edit</button>
-                        <button onClick={() => handleDelete(recipe._id)}>Delete</button>
-                    </div>
-                ))
-            )}
+                {loading ? (
+                    <p>Loading...</p>
+                ) : recipes.length === 0 ? (
+                    <p>No recipes found. Try adding one!</p>
+                ) : (
+                    recipes.map((recipe) => (
+                        <div key={recipe._id} className="recipe-item">
+                            <span>{recipe.title}</span>
+                            <div className="recipe-actions">
+                                <button onClick={() => navigate(`/recipe/edit/${recipe._id}`)} className="edit-button">Edit</button>
+                                <button onClick={() => handleDelete(recipe._id)} className="delete-button">Delete</button>
+                            </div>
+                        </div>
+                    ))
+                )}
+            </div>
         </div>
     );
 }

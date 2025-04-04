@@ -2,6 +2,7 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { Link } from 'react-router-dom';
+import './SavedRecipes.css'; // Import the CSS file for styling
 
 function SavedRecipes() {
     const [savedRecipes, setSavedRecipes] = useState([]);
@@ -44,28 +45,30 @@ function SavedRecipes() {
     if (error) return <p>{error}</p>;
 
     return (
-        <div className="saved-recipes-container">
-            <h2>Saved Recipes</h2>
-            {savedRecipes.length === 0 ? (
-                <p>You haven't saved any recipes yet. Go explore!</p>
-            ) : (
-                savedRecipes.map(recipe => (
-                    <div key={recipe._id} className="saved-recipe-card">
-                        <h3>
-                            <Link to={`/recipe/${recipe._id}`}>
-                                {recipe.title}
-                            </Link>
-                            {recipe.isVegan && <span className="vegan-badge">🌱</span>}
-                            <button onClick={() => handleUnsave(recipe._id)}>
-                                Unsave
-                            </button>
-                        </h3>
-                        <p>{recipe.description}</p>
-                        <p><strong>Author:</strong> {recipe.createdBy?.username || 'Unknown'}</p>
-                        <p><strong>Prep:</strong> {recipe.prepTime} mins | <strong>Cook:</strong> {recipe.cookTime} mins</p>
-                    </div>
-                ))
-            )}
+        <div className="saved-recipes-page">
+            <div className="saved-recipes-container">
+                <h2>Saved Recipes</h2>
+                {savedRecipes.length === 0 ? (
+                    <p>You haven't saved any recipes yet. Go explore!</p>
+                ) : (
+                    savedRecipes.map(recipe => (
+                        <div key={recipe._id} className="saved-recipe-card">
+                            <h3>
+                                <Link to={`/recipe/${recipe._id}`} className="recipe-link">
+                                    {recipe.title}
+                                </Link>
+                                {recipe.isVegan && <span className="vegan-badge">🌱</span>}
+                                <button onClick={() => handleUnsave(recipe._id)} className="unsave-button">
+                                    Unsave
+                                </button>
+                            </h3>
+                            <p>{recipe.description}</p>
+                            <p><strong>Author:</strong> {recipe.createdBy?.username || 'Unknown'}</p>
+                            <p><strong>Prep:</strong> {recipe.prepTime} mins | <strong>Cook:</strong> {recipe.cookTime} mins</p>
+                        </div>
+                    ))
+                )}
+            </div>
         </div>
     );
 }
