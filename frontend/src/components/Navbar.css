@@ -3,8 +3,8 @@
     justify-content: space-between;
     align-items: center;
     padding: 1rem 2rem;
-    background-color: #fff;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    background-color: white;
+    box-shadow: 0 2px 4px var(--shadow-color);
     position: fixed;
     top: 0;
     left: 0;
@@ -18,30 +18,30 @@
 }
 
 .navbar-brand a {
-    color: #6c63ff;
+    color: var(--primary-color);
     text-decoration: none;
     transition: color 0.3s ease;
 }
 
 .navbar-brand a:hover {
-    color: #5449d6;
+    color: var(--primary-hover);
 }
 
 .navbar-menu {
     display: flex;
-    gap: 2rem;
+    gap: 1.5rem;
     align-items: center;
 }
 
 .nav-item {
-    color: #333;
+    color: var(--text-color);
     text-decoration: none;
     font-size: 1rem;
     transition: color 0.3s ease;
 }
 
 .nav-item:hover {
-    color: #6c63ff;
+    color: var(--primary-color);
 }
 
 .logout-btn {
@@ -49,15 +49,14 @@
     border: none;
     cursor: pointer;
     font-size: 1rem;
-    color: #333;
+    color: var(--text-color);
     padding: 0;
 }
 
 .logout-btn:hover {
-    color: #6c63ff;
+    color: var(--primary-color);
 }
 
-/* 響應式設計 */
 @media (max-width: 768px) {
     .navbar {
         padding: 1rem;
@@ -66,4 +65,4 @@
     .navbar-menu {
         gap: 1rem;
     }
-} 
+}

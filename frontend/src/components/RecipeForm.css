@@ -19,19 +19,19 @@ body {
     align-items: flex-start;
     min-height: calc(100vh - 64px);
     padding: 2rem;
-    background-color: #f8f9fb;
+    background-color: var(--secondary-color);
     box-sizing: border-box;
     width: 100%;
 }
-  
+
 /* Form main container */
 .recipe-form-container {
     width: 100%;
     max-width: 800px;
-    background-color: #fff;
+    background-color: white;
     padding: 3rem;
     border-radius: 12px;
-    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+    box-shadow: 0 8px 24px var(--shadow-color);
     font-family: 'Segoe UI', sans-serif;
     margin-top: 1rem;
 }
@@ -39,7 +39,7 @@ body {
 /* Form title */
 .recipe-form-container h2 {
     text-align: center;
-    color: #333;
+    color: var(--text-color);
     margin-bottom: 2rem;
     font-size: 1.8rem;
 }
@@ -63,7 +63,7 @@ body {
 .form-group input[type="number"] {
     width: 100%;
     padding: 0.75rem 1rem;
-    border: 1px solid #ddd;
+    border: 1px solid var(--border-color);
     border-radius: 8px;
     font-size: 1rem;
     transition: all 0.2s ease;
@@ -71,7 +71,7 @@ body {
 
 /* Input focus styles */
 .form-group input:focus {
-    border-color: #6c63ff;
+    border-color: var(--primary-color);
     box-shadow: 0 0 0 2px rgba(108, 99, 255, 0.15);
     outline: none;
 }
@@ -141,7 +141,7 @@ body {
 
 /* Submit button styles */
 .submit-button {
-    background-color: #6c63ff;
+    background-color: var(--primary-color);
     color: white;
     border: none;
     padding: 1rem;
@@ -153,7 +153,7 @@ body {
 }
 
 .submit-button:hover {
-    background-color: #5449d6;
+    background-color: var(--primary-hover);
 }
 
 /* Responsive design */
@@ -162,10 +162,9 @@ body {
         padding: 1.5rem;
         margin: 1rem;
     }
-    
+
     .form-group input[type="text"],
     .form-group input[type="number"] {
         padding: 0.6rem 0.8rem;
     }
 }
-  

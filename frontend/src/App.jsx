@@ -1,4 +1,3 @@
-// export default App
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { Helmet } from 'react-helmet';
@@ -8,7 +7,7 @@ import RecipeForm from './components/RecipeForm';
 import AdminDashboard from './components/AdminDashboard';
 import RecipeList from './components/RecipeList';
 import RecipeDetail from './components/RecipeDetail';
-
+import MainPage from './components/MainPage';
 import Register from './components/Register';
 import ProtectedRoute from './components/ProtectedRoute';
 
@@ -30,22 +29,22 @@ function App() {
         <Navbar />
         <div className="content-container">
           <Routes>
+            <Route path="/" element={<MainPage />} />
             <Route path="/login" element={<Login />} />
             <Route path="/search" element={<RecipeSearch />} />
             <Route path="/recipe/new" element={<RecipeForm />} />
             <Route path="/recipe/edit/:id" element={<RecipeForm />} />
             <Route path="/register" element={<Register />} />
-             <Route
-            path="/admin"
-            element={
-              <ProtectedRoute>
-                <AdminDashboard />
-              </ProtectedRoute>
-            }
-          />
+            <Route
+              path="/admin"
+              element={
+                <ProtectedRoute>
+                  <AdminDashboard />
+                </ProtectedRoute>
+              }
+            />
             <Route path="/recipe/list" element={<RecipeList />} />
             <Route path="/recipe/:id" element={<RecipeDetail />} />
-            <Route path="/" element={<RecipeSearch />} />
             <Route path="/saved" element={<SavedRecipes />} />
           </Routes>
         </div>
