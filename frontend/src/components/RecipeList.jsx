@@ -53,7 +53,9 @@ function RecipeList() {
                 ) : (
                     recipes.map((recipe) => (
                         <div key={recipe._id} className="recipe-item">
-                            <span>{recipe.title}</span>
+                            <Link to={`/recipe/${recipe._id}`} className="recipe-title-link">
+                                {recipe.title}
+                            </Link>
                             <div className="recipe-actions">
                                 <button onClick={() => navigate(`/recipe/edit/${recipe._id}`)} className="edit-button">Edit</button>
                                 <button onClick={() => handleDelete(recipe._id)} className="delete-button">Delete</button>
