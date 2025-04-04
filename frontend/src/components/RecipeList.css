@@ -23,6 +23,18 @@
     border-bottom: 1px solid var(--border-color);
 }
 
+.recipe-title-link {
+    font-size: inherit;
+    color: #333;
+    text-decoration: none;
+    transition: color 0.2s ease;
+}
+
+.recipe-title-link:hover {
+    color: var(--primary-color, #6c63ff);
+    text-decoration: underline;
+}
+
 .recipe-actions button {
     margin-left: 0.5rem;
 }
