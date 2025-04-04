@@ -5,7 +5,7 @@
     padding: 2rem;
     background: white;
     border-radius: 12px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 2px 4px var(--shadow-color);
 }
 
 /* Action button styles */
@@ -15,7 +15,8 @@
     margin-bottom: 1.5rem;
 }
 
-.back-button, .save-button {
+.back-button,
+.save-button {
     padding: 0.6rem 1rem;
     border-radius: 8px;
     cursor: pointer;
@@ -317,14 +318,14 @@
 .comment-form textarea {
     width: 100%;
     padding: 0.75rem;
-    border: 1px solid #ddd;
+    border: 1px solid var(--border-color);
     border-radius: 8px;
     margin-bottom: 1rem;
     resize: vertical;
 }
 
 .comment-form button {
-    background: #6c63ff;
+    background: var(--primary-color);
     color: white;
     border: none;
     padding: 0.75rem 1.5rem;
@@ -334,7 +335,7 @@
 }
 
 .comment-form button:hover {
-    background: #5449d6;
+    background: var(--primary-hover);
 }
 
 .comment-form button:disabled {
