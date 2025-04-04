@@ -4,11 +4,11 @@ import './Navbar.css';
 
 function Navbar() {
     const navigate = useNavigate();
-    const isLoggedIn = localStorage.getItem('token');
+    const isLoggedIn = localStorage.getItem('token'); // Check if the user is logged in
 
     const handleLogout = () => {
-        localStorage.removeItem('token');
-        navigate('/login');
+        localStorage.removeItem('token'); // Remove the token from localStorage
+        navigate('/login'); // Redirect to the login page
     };
 
     return (
@@ -26,11 +26,14 @@ function Navbar() {
                         <button onClick={handleLogout} className="nav-item logout-btn">Logout</button>
                     </>
                 ) : (
-                    <Link to="/login" className="nav-item">Login</Link>
+                    <>
+                        <Link to="/login" className="nav-item">Login</Link>
+                        <Link to="/register" className="nav-item">Register</Link>
+                    </>
                 )}
             </div>
         </nav>
     );
 }
 
-export default Navbar; 
+export default Navbar;
