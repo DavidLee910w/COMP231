@@ -59,6 +59,27 @@ body {
     font-size: var(--input-font-size);
 }
 
+/* Ensure all form fields and the text editor have the same width */
+.form-group input,
+.form-group .editor-container,
+.form-group textarea {
+    width: 100%;
+    max-width: 1000px;
+    /* Match the max width of the recipe editor */
+    box-sizing: border-box;
+}
+
+/* Align helper text for SEO tags with the input field */
+.form-group input[type="text"]+.form-text {
+    text-align: left;
+    margin-left: 0;
+    /* Remove any unintended indentation */
+    font-size: 0.9rem;
+    /* Adjust font size for better readability */
+    color: var(--text-muted-color);
+    /* Use muted color for helper text */
+}
+
 /* Form group styles */
 .form-group {
     display: flex;
@@ -104,6 +125,16 @@ body {
     cursor: pointer;
 }
 
+/* Fix checkbox width issue */
+.checkbox-group input[type="checkbox"] {
+    width: auto;
+    /* Prevent width enlargement */
+    height: auto;
+    /* Ensure consistent height */
+    margin-right: 8px;
+    /* Add spacing between checkbox and label */
+}
+
 /* SimpleMDE editor container */
 .editor-container {
     margin-bottom: 1rem;
@@ -125,12 +156,55 @@ body {
     line-height: 1.5;
 }
 
+/* Align text in the text editor to the left */
+.editor-container .CodeMirror {
+    text-align: left;
+}
+
 .recipe-editor .editor-toolbar {
     border: 1px solid #ddd;
     border-bottom: none;
     border-radius: 8px 8px 0 0;
     background-color: #f8f9fb;
     opacity: 1;
+}
+
+/* Ensure recipe editor buttons are visible */
+.recipe-editor .editor-toolbar button {
+    color: #333;
+    /* Set button text color */
+    background-color: #000000;
+    /* Set button background color */
+    border: 1px solid #ddd;
+    /* Add border for better visibility */
+    padding: 0.5rem;
+    /* Add padding for better click area */
+    border-radius: 4px;
+    /* Slightly round the corners */
+    cursor: pointer;
+    /* Show pointer cursor on hover */
+    display: inline-block;
+    /* Ensure buttons are visible */
+    font-size: 0.9rem;
+    /* Adjust font size for better visibility */
+    padding: 0.5rem 1rem;
+    /* Add padding for better click area */
+    background-color: #f8f9fb;
+    /* Ensure background color is visible */
+    border: 1px solid #ddd;
+    /* Add border for better visibility */
+    color: #333;
+    /* Ensure text color is visible */
+    cursor: pointer;
+    transition: background-color 0.3s ease, border-color 0.3s ease;
+}
+
+/* Add hover effect for buttons */
+.recipe-editor .editor-toolbar button:hover {
+    background-color: #e9ecef;
+    /* Slightly darker background on hover */
+    border-color: #ccc;
+    /* Adjust border color on hover */
 }
 
 .recipe-editor .editor-toolbar button {
@@ -151,6 +225,87 @@ body {
     padding: 1rem;
     border: 1px solid #ddd;
     border-radius: 0 0 8px 8px;
+}
+
+/* Ensure SimpleMDE editor toolbar buttons are visible */
+.editor-toolbar button {
+    display: inline-block;
+    /* Ensure buttons are visible */
+    font-size: 0.9rem;
+    /* Adjust font size for better visibility */
+    padding: 0.5rem 1rem;
+    /* Add padding for better click area */
+    background-color: #f8f9fb;
+    /* Set a light background color */
+    border: 1px solid #ddd;
+    /* Add a border for better visibility */
+    color: #333;
+    /* Ensure text color is visible */
+    cursor: pointer;
+    /* Show pointer cursor */
+    transition: background-color 0.3s ease, border-color 0.3s ease;
+}
+
+/* Add hover effect for toolbar buttons */
+.editor-toolbar button:hover {
+    background-color: #e9ecef;
+    /* Slightly darker background on hover */
+    border-color: #ccc;
+    /* Adjust border color on hover */
+}
+
+/* Ensure disabled buttons are styled appropriately */
+.editor-toolbar button.disabled {
+    opacity: 0.5;
+    /* Reduce opacity for disabled buttons */
+    cursor: not-allowed;
+    /* Show not-allowed cursor */
+}
+
+/* Center toolbar buttons and make them square-shaped */
+.editor-toolbar {
+    display: flex;
+    justify-content: center;
+    /* Center buttons horizontally */
+    align-items: center;
+    /* Center buttons vertically */
+    gap: 0.5rem;
+    /* Add spacing between buttons */
+}
+
+.editor-toolbar button {
+    width: 40px;
+    /* Set equal width */
+    height: 40px;
+    /* Set equal height to make them square */
+    display: flex;
+    justify-content: center;
+    /* Center content inside the button */
+    align-items: center;
+    /* Center content inside the button */
+    font-size: 1rem;
+    /* Adjust font size for better visibility */
+    padding: 0;
+    /* Remove extra padding */
+    background-color: #f8f9fb;
+    /* Set a light background color */
+    border: 1px solid #ddd;
+    /* Add a border for better visibility */
+    color: #333;
+    /* Ensure text color is visible */
+    cursor: pointer;
+    /* Show pointer cursor */
+    border-radius: 4px;
+    /* Slightly round the corners */
+    transition: background-color 0.3s ease, border-color 0.3s ease;
+}
+
+/* Add hover effect for toolbar buttons */
+.editor-toolbar button:hover {
+    background-color: #e9ecef;
+    /* Slightly darker background on hover */
+    border-color: #ccc;
+    /* Adjust border color on hover */
 }
 
 /* Submit button styles */
