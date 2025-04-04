@@ -3,26 +3,28 @@ import { useParams } from 'react-router-dom';
 import axios from 'axios';
 import ReactMarkdown from 'react-markdown';
 import { Helmet } from 'react-helmet';
-import './RecipeDetail.css';
+import '../styles/RecipeDetail.css';
 import { useNavigate } from 'react-router-dom';
+
+const API_URL = import.meta.env.VITE_REACT_APP_API_URL;
 
 // Star rating component
 const StarRating = ({ rating, onRatingChange }) => {
     const [hover, setHover] = useState(null);
-    
+
     return (
         <div className="star-rating">
             {[...Array(5)].map((star, index) => {
                 const ratingValue = index + 1;
                 return (
                     <label key={index}>
-                        <input 
-                            type="radio" 
-                            name="rating" 
-                            value={ratingValue} 
+                        <input
+                            type="radio"
+                            name="rating"
+                            value={ratingValue}
                             onClick={() => onRatingChange(ratingValue)}
                         />
-                        <span 
+                        <span
                             className={`star ${ratingValue <= (hover || rating) ? 'filled' : ''}`}
                             onMouseEnter={() => setHover(ratingValue)}
                             onMouseLeave={() => setHover(null)}
@@ -59,7 +61,7 @@ function RecipeDetail() {
 
         const fetchRecipe = async () => {
             try {
-                const res = await axios.get(`http://localhost:5000/api/recipes/${id}`);
+                const res = await axios.get(`${API_URL}/api/recipes/${id}`);
                 setRecipe(res.data);
             } catch (err) {
                 setError('Failed to fetch recipe.');
@@ -70,7 +72,7 @@ function RecipeDetail() {
         const checkIfSaved = async () => {
             try {
                 const token = localStorage.getItem('token');
-                const res = await axios.get(`http://localhost:5000/api/recipes/${id}/isSaved`, {
+                const res = await axios.get(`${API_URL}/api/recipes/${id}/isSaved`, {
                     headers: { Authorization: `Bearer ${token}` }
                 });
                 setIsSaved(res.data.isSaved);
@@ -85,7 +87,7 @@ function RecipeDetail() {
     const handleToggleSave = async () => {
         try {
             const token = localStorage.getItem('token');
-            await axios.post(`http://localhost:5000/api/recipes/save/${id}`, {}, {
+            await axios.post(`${API_URL}/api/recipes/save/${id}`, {}, {
                 headers: { Authorization: `Bearer ${token}` }
             });
             setIsSaved(prev => !prev);
@@ -104,7 +106,7 @@ function RecipeDetail() {
         try {
             const token = localStorage.getItem('token');
             await axios.post(
-                `http://localhost:5000/api/recipes/${id}/comments`,
+                `${API_URL}/api/recipes/${id}/comments`,
                 { comment: newComment, rating: rating },
                 {
                     headers: {
@@ -114,7 +116,7 @@ function RecipeDetail() {
                 }
             );
             // Refetch full recipe data to include populated username
-            const updatedRecipe = await axios.get(`http://localhost:5000/api/recipes/${id}`);
+            const updatedRecipe = await axios.get(`${API_URL}/api/recipes/${id}`);
             setRecipe(updatedRecipe.data);
             setNewComment('');
             setRating(0);
@@ -143,24 +145,24 @@ function RecipeDetail() {
         try {
             const token = localStorage.getItem('token');
             await axios.delete(
-                `http://localhost:5000/api/recipes/${recipeId}/comments/${commentId}`,
+                `${API_URL}/api/recipes/${recipeId}/comments/${commentId}`,
                 {
                     headers: {
                         Authorization: `Bearer ${token}`
                     }
                 }
             );
-            
+
             // Refresh recipe data after delete
-            const updatedRecipe = await axios.get(`http://localhost:5000/api/recipes/${id}`);
+            const updatedRecipe = await axios.get(`${API_URL}/api/recipes/${id}`);
             setRecipe(updatedRecipe.data);
 
             // If the current page is now empty (except for the last page), go to the previous page
-            const newSortedComments = [...updatedRecipe.data.comments].sort((a, b) => 
+            const newSortedComments = [...updatedRecipe.data.comments].sort((a, b) =>
                 new Date(b.createdAt) - new Date(a.createdAt)
             );
             const newTotalPages = Math.ceil(newSortedComments.length / commentsPerPage);
-            
+
             if (currentPage > newTotalPages) {
                 setCurrentPage(Math.max(1, newTotalPages));
             }
@@ -175,7 +177,7 @@ function RecipeDetail() {
     if (!recipe) return <p>Recipe not found.</p>;
 
     // Sort comments, newest first
-    const sortedComments = [...recipe.comments].sort((a, b) => 
+    const sortedComments = [...recipe.comments].sort((a, b) =>
         new Date(b.createdAt) - new Date(a.createdAt)
     );
 
@@ -187,9 +189,9 @@ function RecipeDetail() {
 
     // Calculate average rating
     const hasRatings = recipe.comments && recipe.comments.some(c => c.rating > 0);
-    const avgRating = hasRatings 
-        ? (recipe.comments.reduce((sum, comment) => sum + (comment.rating || 0), 0) / 
-          recipe.comments.filter(c => c.rating > 0).length).toFixed(1)
+    const avgRating = hasRatings
+        ? (recipe.comments.reduce((sum, comment) => sum + (comment.rating || 0), 0) /
+            recipe.comments.filter(c => c.rating > 0).length).toFixed(1)
         : 0;
 
     const metaDescription = `${recipe.title} - ${recipe.isVegan ? 'Vegan Recipe' : 'Recipe'} with prep time ${recipe.prepTime} mins and cook time ${recipe.cookTime} mins. Serves ${recipe.servings}. ${recipe.ingredients.map(ing => ing.name).join(', ')}.`;
@@ -202,26 +204,26 @@ function RecipeDetail() {
                 <title>{`${recipe.title} Recipe - Dishcovery`}</title>
                 <meta name="description" content={metaDescription} />
                 <meta name="keywords" content={keywords} />
-                
+
                 {/* Open Graph / Facebook */}
                 <meta property="og:type" content="article" />
                 <meta property="og:url" content={currentUrl} />
                 <meta property="og:title" content={`${recipe.title} Recipe - Dishcovery`} />
                 <meta property="og:description" content={metaDescription} />
                 {recipe.image && <meta property="og:image" content={recipe.image} />}
-                
+
                 {/* Twitter */}
                 <meta name="twitter:card" content="summary_large_image" />
                 <meta name="twitter:title" content={`${recipe.title} Recipe - Dishcovery`} />
                 <meta name="twitter:description" content={metaDescription} />
                 {recipe.image && <meta name="twitter:image" content={recipe.image} />}
-                
+
                 {/* Recipe specific meta tags */}
                 <meta name="recipe-type" content={recipe.isVegan ? 'Vegan' : 'Standard'} />
                 <meta name="cooking-time" content={`${recipe.cookTime} minutes`} />
                 <meta name="prep-time" content={`${recipe.prepTime} minutes`} />
                 <meta name="recipe-yield" content={`${recipe.servings} servings`} />
-                
+
                 {/* Canonical URL */}
                 <link rel="canonical" href={currentUrl} />
 
@@ -268,16 +270,16 @@ function RecipeDetail() {
                     <button className="back-button" onClick={handleBackToSearch}>
                         ← Back to Search
                     </button>
-                    <button 
-                        className={`save-button ${isSaved ? 'saved' : ''}`} 
+                    <button
+                        className={`save-button ${isSaved ? 'saved' : ''}`}
                         onClick={handleToggleSave}
                     >
                         {isSaved ? 'Unsave' : 'Save Recipe'}
                     </button>
                 </div>
-                
+
                 <h2 className="recipe-title">{recipe.title}</h2>
-                
+
                 {hasRatings && (
                     <div className="recipe-rating">
                         <div className="star-display">
@@ -291,7 +293,7 @@ function RecipeDetail() {
                         <span className="rating-count">({recipe.comments.filter(c => c.rating > 0).length} {recipe.comments.filter(c => c.rating > 0).length === 1 ? 'rating' : 'ratings'})</span>
                     </div>
                 )}
-                
+
                 <div className="recipe-meta">
                     <p><strong>Prep Time:</strong> {recipe.prepTime} mins</p>
                     <p><strong>Cook Time:</strong> {recipe.cookTime} mins</p>
@@ -319,7 +321,7 @@ function RecipeDetail() {
                 {recipe.image && (
                     <div className="recipe-section">
                         <h3>Image</h3>
-                        <img src={recipe.image} alt={recipe.title} className="recipe-image" />
+                        <img src={`${API_URL}${recipe.image}`} alt={recipe.title} className="recipe-image" />
                     </div>
                 )}
 
@@ -357,7 +359,7 @@ function RecipeDetail() {
                                             <div className="comment-actions">
                                                 <span className="comment-date">{new Date(c.createdAt).toLocaleString()}</span>
                                                 {isAdmin && (
-                                                    <button 
+                                                    <button
                                                         className="delete-comment-btn"
                                                         onClick={() => handleDeleteComment(id, c._id)}
                                                         title="Delete this review"
@@ -374,7 +376,7 @@ function RecipeDetail() {
 
                             {totalPages > 1 && (
                                 <div className="comments-pagination">
-                                    <button 
+                                    <button
                                         onClick={() => handlePageChange(currentPage - 1)}
                                         disabled={currentPage === 1}
                                         className="page-button"
@@ -384,7 +386,7 @@ function RecipeDetail() {
                                     <span className="page-info">
                                         {currentPage} of {totalPages}
                                     </span>
-                                    <button 
+                                    <button
                                         onClick={() => handlePageChange(currentPage + 1)}
                                         disabled={currentPage === totalPages}
                                         className="page-button"
@@ -408,7 +410,7 @@ function RecipeDetail() {
                             placeholder="Write your review here (optional if rating)"
                             rows="3"
                         />
-                        <button 
+                        <button
                             onClick={handleCommentSubmit}
                             disabled={commentSubmitting || (newComment.trim() === '' && rating === 0)}
                         >
