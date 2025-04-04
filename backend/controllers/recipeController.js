@@ -141,6 +141,7 @@ exports.addComment = async (req, res) => {
 exports.deleteComment = async (req, res) => {
     const { recipeId, commentId } = req.params;
     const userId = req.user._id;
+    const isAdmin = req.user.admin === true;
 
     try {
         const recipe = await Recipe.findById(recipeId);
@@ -153,8 +154,8 @@ exports.deleteComment = async (req, res) => {
             return res.status(404).json({ msg: 'Comment not found' });
         }
 
-        // Make sure the user owns the comment
-        if (comment.username.toString() !== userId.toString()) {
+        // Allow admins to delete any comment, regular users can only delete their own
+        if (!isAdmin && comment.username.toString() !== userId.toString()) {
             return res.status(403).json({ msg: 'Not authorized to delete this comment' });
         }
 

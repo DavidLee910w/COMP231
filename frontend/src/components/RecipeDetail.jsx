@@ -47,9 +47,16 @@ function RecipeDetail() {
     const [rating, setRating] = useState(0);
     const [currentPage, setCurrentPage] = useState(1);
     const commentsPerPage = 5;
+    const [isAdmin, setIsAdmin] = useState(false);
     const navigate = useNavigate();
 
     useEffect(() => {
+        // Check if user is admin
+        const user = JSON.parse(localStorage.getItem('user') || 'null');
+        if (user && user.admin) {
+            setIsAdmin(true);
+        }
+
         const fetchRecipe = async () => {
             try {
                 const res = await axios.get(`http://localhost:5000/api/recipes/${id}`);
@@ -126,6 +133,41 @@ function RecipeDetail() {
     // Function to handle pagination
     const handlePageChange = (pageNumber) => {
         setCurrentPage(pageNumber);
+    };
+
+    const handleDeleteComment = async (recipeId, commentId) => {
+        if (!window.confirm('Are you sure you want to delete this review?')) {
+            return;
+        }
+
+        try {
+            const token = localStorage.getItem('token');
+            await axios.delete(
+                `http://localhost:5000/api/recipes/${recipeId}/comments/${commentId}`,
+                {
+                    headers: {
+                        Authorization: `Bearer ${token}`
+                    }
+                }
+            );
+            
+            // Refresh recipe data after delete
+            const updatedRecipe = await axios.get(`http://localhost:5000/api/recipes/${id}`);
+            setRecipe(updatedRecipe.data);
+
+            // If the current page is now empty (except for the last page), go to the previous page
+            const newSortedComments = [...updatedRecipe.data.comments].sort((a, b) => 
+                new Date(b.createdAt) - new Date(a.createdAt)
+            );
+            const newTotalPages = Math.ceil(newSortedComments.length / commentsPerPage);
+            
+            if (currentPage > newTotalPages) {
+                setCurrentPage(Math.max(1, newTotalPages));
+            }
+        } catch (err) {
+            console.error('Failed to delete comment:', err);
+            alert('Failed to delete review. Please try again.');
+        }
     };
 
     if (loading) return <p>Loading...</p>;
@@ -312,7 +354,18 @@ function RecipeDetail() {
                                                     </div>
                                                 )}
                                             </div>
-                                            <span className="comment-date">{new Date(c.createdAt).toLocaleString()}</span>
+                                            <div className="comment-actions">
+                                                <span className="comment-date">{new Date(c.createdAt).toLocaleString()}</span>
+                                                {isAdmin && (
+                                                    <button 
+                                                        className="delete-comment-btn"
+                                                        onClick={() => handleDeleteComment(id, c._id)}
+                                                        title="Delete this review"
+                                                    >
+                                                        <span className="delete-icon">×</span>
+                                                    </button>
+                                                )}
+                                            </div>
                                         </div>
                                         {c.comment && <p>{c.comment}</p>}
                                     </li>
