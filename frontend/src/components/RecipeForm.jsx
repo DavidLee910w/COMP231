@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import SimpleMDE from 'react-simplemde-editor';
@@ -19,7 +19,26 @@ function RecipeForm() {
     const [servings, setServings] = useState(null);
     const [cookTime, setCookTime] = useState(null);
     const [prepTime, setPrepTime] = useState(null);
+    
+    // New states for image upload and preview
+    const [imageFile, setImageFile] = useState(null);
+    const [imagePreview, setImagePreview] = useState(null);
 
+    // SimpleMDE options
+
+    const editorOptions = useMemo(() => ({
+        autofocus: false,
+        spellChecker: false,
+        placeholder: "Write your recipe instructions here...(each line is a step)",
+        status: false,
+        toolbar: ["bold", "italic", "heading", "|", "unordered-list", "ordered-list", "|", "preview", "guide"],
+    }), []);
+    
+
+    const handleInstructionsChange = useCallback((value) => {
+        setInstructions(value);
+    }, []);
+/*
     // SimpleMDE options
     const editorOptions = React.useMemo(() => ({
         autofocus: false,
@@ -34,7 +53,8 @@ function RecipeForm() {
         setInstructions(value);
     }, []);
 
-    useEffect(() => {
+  */
+   useEffect(() => {
         if (id) {
             // Fetch recipe details for editing
             const fetchRecipe = async () => {
@@ -55,6 +75,12 @@ function RecipeForm() {
                     setCookTime(recipe.cookTime);
                     setPrepTime(recipe.prepTime);
                     setSeoTags(recipe.seoTags.join(', '));
+
+                    // If there is an image URL stored in the recipe, set it for preview.
+                    if (recipe.image) {
+                        setImagePreview(`http://localhost:5000${recipe.image}`);
+                    }
+                    console.log('Image URL:', recipe.image);
                 } catch (err) {
                     console.error('Error fetching recipe:', err);
                 }
@@ -73,31 +99,44 @@ function RecipeForm() {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        const recipeData = {
-            title,
-            ingredients: parseIngredients(ingredients),
-            steps: instructions.split('\n').map(step => step.trim()),
-            isVegan,
-            allergens: allergens.split(',').map(item => item.trim()).filter(item => item !== ''),
-            seoTags: seoTags.split(',').map(tag => tag.trim()).filter(tag => tag !== ''),
-            commentsEnabled,
-            servings,
-            cookTime,
-            prepTime
-        };
+
+        // Use FormData so we can send the image file along with other fields
+        const formData = new FormData();
+        formData.append('title', title);
+        formData.append('ingredients', JSON.stringify(parseIngredients(ingredients)));
+        formData.append('steps', JSON.stringify(instructions.split('\n').map(step => step.trim())));
+        formData.append('isVegan', isVegan);
+        formData.append('allergens', JSON.stringify(
+            allergens.split(',').map(item => item.trim()).filter(item => item !== '')
+        ));
+        formData.append('seoTags', JSON.stringify(
+            seoTags.split(',').map(tag => tag.trim()).filter(tag => tag !== '')
+        ));
+        formData.append('commentsEnabled', commentsEnabled);
+        formData.append('servings', servings);
+        formData.append('cookTime', cookTime);
+        formData.append('prepTime', prepTime);
+
+        // Append the image if one is selected
+        if (imageFile) {
+            formData.append('image', imageFile);
+        }
 
         try {
             const token = localStorage.getItem('token');
+            const config = {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                    'Content-Type': 'multipart/form-data'
+                }
+            };
+
             if (id) {
                 // Update existing recipe
-                await axios.put(`http://localhost:5000/api/recipes/${id}`, recipeData, {
-                    headers: { Authorization: `Bearer ${token}` },
-                });
+                await axios.put(`http://localhost:5000/api/recipes/${id}`, formData, config);
             } else {
                 // Create new recipe
-                await axios.post('http://localhost:5000/api/recipes', recipeData, {
-                    headers: { Authorization: `Bearer ${token}` },
-                });
+                await axios.post('http://localhost:5000/api/recipes', formData, config);
             }
             navigate('/recipe/list'); // Redirect to recipe list after saving
         } catch (err) {
@@ -158,7 +197,8 @@ function RecipeForm() {
                     <div className="form-group editor-container">
                         <SimpleMDE
                             value={instructions}
-                            onChange={setInstructions}
+ //                           onChange={setInstructions}
+                            onChange={handleInstructionsChange}
                             options={editorOptions}
                         />
                     </div>
@@ -201,6 +241,25 @@ function RecipeForm() {
                             Enable Comments
                         </label>
                     </div>
+                    {/* New File Input for Image Upload */}
+                    <div className="form-group">
+                        <input
+                            type="file"
+                            accept="image/*"
+                            onChange={(e) => {
+                                const file = e.target.files[0];
+                                if (file) {
+                                    setImageFile(file);
+                                    setImagePreview(URL.createObjectURL(file));
+                                }
+                            }}
+                        />
+                    </div>
+                    {imagePreview && (
+                        <div className="form-group">
+                            <img src={imagePreview} alt="Preview" style={{ width: '200px', marginTop: '10px' }} />
+                        </div>
+                    )}
                     <button type="submit" className="submit-button">
                         {id ? 'Update' : 'Upload'}
                     </button>

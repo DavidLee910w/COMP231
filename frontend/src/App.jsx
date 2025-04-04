@@ -49,7 +49,7 @@ function App() {
             <Route path="/saved" element={<SavedRecipes />} />
           </Routes>
         </div>
-      </div>
+        </div>
     </Router>
   );
 }

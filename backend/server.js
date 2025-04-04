@@ -9,7 +9,7 @@ require('dotenv').config(); // Load environment variables
 const authRoutes = require('./routes/auth');
 const recipeRoutes = require('./routes/recipes');
 const adminRoutes = require('./routes/admin');
-
+const path = require('path');
 const app = express();
 
 // Connect to MongoDB
@@ -25,6 +25,7 @@ mongoose
 app.use(cors()); // Enable CORS if needed
 app.use(bodyParser.json());
 
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 // Route middleware
 app.use('/api/auth', authRoutes);
 app.use('/api/recipes', recipeRoutes);
