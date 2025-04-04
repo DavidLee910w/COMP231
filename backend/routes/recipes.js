@@ -38,6 +38,7 @@ router.delete('/:recipeId/comments/:commentId', verifyToken, recipeController.de
 router.put('/:id', verifyToken, isCreatorOrAdmin, upload.single('image'), recipeController.updateRecipe);
 router.delete('/:id', verifyToken, isCreatorOrAdmin, recipeController.deleteRecipe);
 router.post('/:id/comments', verifyToken, recipeController.addComment);
+router.get('/:id', recipeController.getRecipeById);
 router.delete('/:recipeId/comments/:commentId', verifyToken, recipeController.deleteComment);
 
 

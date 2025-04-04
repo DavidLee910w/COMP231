@@ -1,14 +1,15 @@
 // backend/controllers/recipeController.js
 const Recipe = require('../models/recipe');
+const keywordExtractor = require('keyword-extractor');
+const User = require('../models/user');
 
 // GET /api/recipes/search?ingredients=...&isVegan=true&excludeAllergens=...
 exports.searchRecipes = async (req, res) => {
-    const { ingredients, isVegan, excludeAllergens } = req.query;
+    const { searchedItem, isVegan, excludeAllergens } = req.query;
     let query = {};
-
-    if (ingredients) {
-        const ingredientList = ingredients.split(',').map(i => i.trim());
-        query['ingredients.name'] = { $in: ingredientList };
+    //filtering in title; case insensitive
+    if (searchedItem) {
+        query.title = { $regex: searchedItem, $options: 'i' };
     }
     if (isVegan === 'true') {
         query.isVegan = true;
@@ -56,8 +57,10 @@ exports.createRecipe = async (req, res) => {
             createdBy: req.user._id,
             image: imagePath  // save image path in MongoDB
         };
+
         const newRecipe = new Recipe(recipeData);
         await newRecipe.save();
+
         res.status(201).json(newRecipe);
     } catch (err) {
         console.error(err);
@@ -129,11 +132,12 @@ exports.deleteRecipe = async (req, res) => {
 
 // POST /api/recipes/:id/comments (Add a new comment to the recipe)
 exports.addComment = async (req, res) => {
-    const { comment } = req.body;
+    const { comment, rating } = req.body;
     const userId = req.user._id;
 
-    if (!comment || comment.trim() === '') {
-        return res.status(400).json({ msg: 'Comment is required' });
+    // At least a comment or rating is required
+    if ((!comment || comment.trim() === '') && (!rating || rating < 1)) {
+        return res.status(400).json({ msg: 'Comment or rating is required' });
     }
 
     try {
@@ -146,10 +150,19 @@ exports.addComment = async (req, res) => {
             return res.status(403).json({ msg: 'Comments are disabled for this recipe' });
         }
 
-        recipe.comments.push({
-            username: userId,
-            comment: comment.trim()
-        });
+        const newComment = {
+            username: userId
+        };
+
+        if (comment && comment.trim() !== '') {
+            newComment.comment = comment.trim();
+        }
+
+        if (rating && rating >= 1 && rating <= 5) {
+            newComment.rating = rating;
+        }
+
+        recipe.comments.push(newComment);
 
         await recipe.save();
         // Populate comment usernames again
@@ -198,8 +211,11 @@ exports.deleteComment = async (req, res) => {
 
 // GET /api/recipes/:id (Get a single recipe by ID)
 exports.getRecipeById = async (req, res) => {
+    console.log('Fetching recipe with ID:', req.params.id);
     try {
-        const recipe = await Recipe.findById(req.params.id).populate('createdBy', 'username');
+        const recipe = await Recipe.findById(req.params.id)
+            .populate('createdBy', 'username')
+            .populate('comments.username', 'username');
         if (!recipe) {
             return res.status(404).json({ msg: 'Recipe not found' });
         }
