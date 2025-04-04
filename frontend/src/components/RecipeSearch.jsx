@@ -3,10 +3,11 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { Link } from 'react-router-dom';
 import { Helmet } from 'react-helmet';
-import './RecipeSearch.css';
+import '../styles/RecipeSearch.css';
 import { useRef } from 'react';
 
 const allergenOptions = ['peanut', 'gluten', 'shellfish', 'dairy', 'soy', 'egg'];
+const API_URL = import.meta.env.VITE_REACT_APP_API_URL;
 
 function RecipeSearch() {
     const [searchedItem, setSearchedItem] = useState('');
@@ -39,7 +40,7 @@ function RecipeSearch() {
     useEffect(() => {
         const fetchTitles = async () => {
             try {
-                const res = await axios.get('http://localhost:5000/api/recipes/titles');
+                const res = await axios.get(`${API_URL}/api/recipes/titles`);
                 console.log('Titles fetched:', res.data);
                 setAllTitles(res.data);
             } catch (err) {
@@ -76,7 +77,7 @@ function RecipeSearch() {
         setHasSearched(true); // Mark that a search was performed
         setSuggestions([]); // Clear suggestions after searching
         try {
-            const res = await axios.get('http://localhost:5000/api/recipes/search', {
+            const res = await axios.get(`${API_URL}/api/recipes/search`, {
                 params: {
                     searchedItem,
                     isVegan,
@@ -122,7 +123,7 @@ function RecipeSearch() {
                 <meta property="og:type" content="website" />
                 <link rel="canonical" href="https://your-domain.com/search" />
             </Helmet>
-            
+
             <h2>Search Recipes</h2>
 
             {/* Search input + suggestions box */}

@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { Link } from 'react-router-dom';
-import './AdminDashboard.css'; // Add custom styles here
+import '../styles/AdminDashboard.css';
 import { useNavigate } from 'react-router-dom';
 
+const API_URL = import.meta.env.VITE_REACT_APP_API_URL;
 
 function AdminDashboard() {
     const [users, setUsers] = useState([]);
@@ -27,7 +28,7 @@ function AdminDashboard() {
         try {
 
             const token = localStorage.getItem('token'); // Retrieve the token
-            const res = await axios.get('http://localhost:5000/api/admin/users', {
+            const res = await axios.get(`${API_URL}/api/admin/users`, {
                 headers: {
                     Authorization: `Bearer ${token}`, // Include the token in the Authorization header
                 },
@@ -43,7 +44,7 @@ function AdminDashboard() {
     const fetchRecipes = async () => {
         try {
             const token = localStorage.getItem('token'); // Retrieve the token
-            const res = await axios.get('http://localhost:5000/api/recipes/search', {
+            const res = await axios.get(`${API_URL}/api/recipes/search`, {
                 headers: {
                     Authorization: `Bearer ${token}`, // Include the token in the Authorization header
                 },
@@ -58,7 +59,7 @@ function AdminDashboard() {
     const handleDeleteRecipe = async (id) => {
         try {
             const token = localStorage.getItem('token'); // Retrieve the token
-            await axios.delete(`http://localhost:5000/api/recipes/${id}`, {
+            await axios.delete(`${API_URL}/api/recipes/${id}`, {
                 headers: {
                     Authorization: `Bearer ${token}`, // Include the token in the Authorization header
                 },
@@ -67,7 +68,7 @@ function AdminDashboard() {
         } catch (err) {
             console.error(err);
             setError('Failed to delete recipe.');
-            await axios.delete('http://localhost:5000/api/admin/recipes/${id}', {
+            await axios.delete(`${API_URL}/api/admin/recipes/${id}`, {
                 headers: {
                     Authorization: `Bearer ${token}`
                 }
