@@ -12,13 +12,22 @@
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 
-  --primary-color: #6c63ff;
-  --primary-hover: #5449d6;
-  --secondary-color: #f8f9fb;
+  --primary-color: #ff8c00;
+  /* Orange tone */
+  --primary-hover: #e67e00;
+  /* Darker orange for hover */
+  --secondary-color: #fff8e1;
+  /* Light orange background */
   --text-color: #333;
   --text-muted: #555;
   --border-color: #ddd;
   --shadow-color: rgba(0, 0, 0, 0.1);
+  --input-border: #ccc;
+  --input-focus-border: #6c63ff;
+  --input-bg: #fff;
+  --input-padding: 0.75rem;
+  --input-radius: 8px;
+  --input-font-size: 1rem;
 }
 
 a {
@@ -33,10 +42,13 @@ a:hover {
 }
 
 body {
-  margin: 0;
-  display: flex;
-  flex-direction: column;
+  background-color: var(--secondary-color);
+  /* Remove background image */
   min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 0;
 }
 
 h1,
@@ -52,7 +64,7 @@ h6 {
 button {
   border-radius: 8px;
   border: 1px solid transparent;
-  padding: 0.6em 1.2em;
+  padding: 0.8em 1.5em;
   font-size: 1rem;
   font-weight: 500;
   font-family: inherit;
@@ -65,11 +77,127 @@ button {
 
 button:hover {
   background-color: var(--primary-hover);
+  transform: translateY(-2px);
 }
 
 button:focus,
 button:focus-visible {
   outline: 4px auto -webkit-focus-ring-color;
+}
+
+input,
+textarea,
+select {
+  width: 100%;
+  padding: var(--input-padding);
+  border: 1px solid var(--input-border);
+  border-radius: var(--input-radius);
+  background-color: var(--input-bg);
+  font-size: var(--input-font-size);
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
+  color: black;
+  /* Ensure text is visible */
+}
+
+input:focus,
+textarea:focus,
+select:focus {
+  border-color: var(--input-focus-border);
+  box-shadow: 0 0 4px var(--input-focus-border);
+  outline: none;
+}
+
+form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+label {
+  font-weight: 500;
+  margin-bottom: 0.5rem;
+}
+
+.error-message {
+  color: red;
+  font-size: 0.9rem;
+  margin-top: -1rem;
+}
+
+.register-container {
+  max-width: 400px;
+  margin: 0 auto;
+  padding: 2rem;
+  background-color: rgba(255, 255, 255, 0.9);
+  /* Add a white background with slight transparency */
+  border-radius: 12px;
+  /* Rounded corners */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  /* Add shadow for depth */
+}
+
+.register-form .form-group {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 1.5rem;
+  width: 100%;
+  /* Ensure consistent width for all form groups */
+}
+
+.register-form label {
+  margin-bottom: 0.5rem;
+  font-weight: 500;
+  text-align: left;
+}
+
+.register-form input {
+  padding: var(--input-padding);
+  border: 1px solid var(--input-border);
+  border-radius: var(--input-radius);
+  font-size: var(--input-font-size);
+  color: black;
+  width: 100%;
+  /* Ensure all inputs have the same width */
+  box-sizing: border-box;
+  /* Include padding and border in width calculation */
+}
+
+.login-container {
+  max-width: 400px;
+  margin: 0 auto;
+  padding: 2rem;
+  background-color: white;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px var(--shadow-color);
+}
+
+.login-form .form-group {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 1.5rem;
+  width: 100%;
+  /* Ensure consistent width for all form groups */
+}
+
+.login-form label {
+  margin-bottom: 0.5rem;
+  font-weight: 500;
+  text-align: left;
+  /* Align label text to the left */
+}
+
+.login-form input {
+  padding: var(--input-padding);
+  border: 1px solid var(--input-border);
+  border-radius: var(--input-radius);
+  font-size: var(--input-font-size);
+  color: black;
+  width: 100%;
+  /* Ensure all inputs have the same width */
+  box-sizing: border-box;
+  /* Include padding and border in width calculation */
 }
 
 @media (prefers-color-scheme: light) {

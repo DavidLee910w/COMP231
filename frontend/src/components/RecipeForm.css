@@ -31,7 +31,7 @@ body {
     background-color: white;
     padding: 3rem;
     border-radius: 12px;
-    box-shadow: 0 8px 24px var(--shadow-color);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
     font-family: 'Segoe UI', sans-serif;
     margin-top: 1rem;
 }
@@ -49,6 +49,14 @@ body {
     display: flex;
     flex-direction: column;
     gap: 1.5rem;
+}
+
+.recipe-form input,
+.recipe-form textarea {
+    padding: 0.8rem;
+    border: 1px solid var(--input-border);
+    border-radius: var(--input-radius);
+    font-size: var(--input-font-size);
 }
 
 /* Form group styles */
@@ -74,6 +82,12 @@ body {
     border-color: var(--primary-color);
     box-shadow: 0 0 0 2px rgba(108, 99, 255, 0.15);
     outline: none;
+}
+
+.recipe-form input:focus,
+.recipe-form textarea:focus {
+    border-color: var(--input-focus-border);
+    box-shadow: 0 0 4px var(--input-focus-border);
 }
 
 /* Checkbox group styles */
