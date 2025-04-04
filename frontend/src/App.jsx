@@ -34,6 +34,7 @@ function App() {
             <Route path="/search" element={<RecipeSearch />} />
             <Route path="/recipe/new" element={<RecipeForm />} />
             <Route path="/recipe/edit/:id" element={<RecipeForm />} />
+            <Route path="/register" element={<Register />} />
              <Route
             path="/admin"
             element={
@@ -48,6 +49,7 @@ function App() {
             <Route path="/saved" element={<SavedRecipes />} />
           </Routes>
         </div>
+      </div>
     </Router>
   );
 }
