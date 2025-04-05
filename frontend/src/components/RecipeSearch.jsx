@@ -21,7 +21,7 @@ function RecipeSearch() {
     const [suggestions, setSuggestions] = useState([]);
     const recipesPerPage = 10; //max 10 recipes per page
     const inputRef = useRef(null);
-    const [sortOrder, setSortOrder] = useState('asc'); // 'asc' for ascending, 'desc' for descending
+    const [sortOrder, setSortOrder] = useState('asc'); // 'asc' for ascending, 'desc' for descending, 'random' for random
 
     // Close suggestions when clicking outside
     useEffect(() => {
@@ -115,15 +115,45 @@ function RecipeSearch() {
     };
 
     const sortRecipes = () => {
-        const sortedRecipes = [...recipes].sort((a, b) => {
-            if (sortOrder === 'asc') {
-                return new Date(a.createdAt) - new Date(b.createdAt);
-            } else {
-                return new Date(b.createdAt) - new Date(a.createdAt);
-            }
-        });
+        let sortedRecipes;
+        let nextSortOrder;
+
+        switch(sortOrder) {
+            case 'asc':
+                
+                sortedRecipes = [...recipes].sort((a, b) => {
+                    return new Date(b.createdAt) - new Date(a.createdAt);
+                });
+                nextSortOrder = 'desc';
+                break;
+            
+            case 'desc':
+                
+                sortedRecipes = shuffleArray([...recipes]);
+                nextSortOrder = 'random';
+                break;
+            
+            case 'random':
+            default:
+                
+                sortedRecipes = [...recipes].sort((a, b) => {
+                    return new Date(a.createdAt) - new Date(b.createdAt);
+                });
+                nextSortOrder = 'asc';
+                break;
+        }
+
         setRecipes(sortedRecipes);
-        setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc'); // Toggle sort order
+        setSortOrder(nextSortOrder); 
+    };
+
+    const shuffleArray = (array) => {
+        const shuffled = [...array];
+        for (let i = shuffled.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]]; 
+        }
+        return shuffled;
     };
 
     return (
@@ -198,7 +228,7 @@ function RecipeSearch() {
                 <button onClick={handleSearch}>Search</button>
                 <button onClick={handleReset}>Reset</button>
                 <button onClick={sortRecipes}>
-                    Sort by Creation Time ({sortOrder === 'asc' ? 'Ascending' : 'Descending'})
+                    {sortOrder === 'asc' ? 'Sort by : oldest to latest' : sortOrder === 'desc' ? 'Sort by : latest to oldest' : 'Sort by : Random'}
                 </button>
             </div>
 
