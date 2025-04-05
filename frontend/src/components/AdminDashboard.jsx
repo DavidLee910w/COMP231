@@ -29,10 +29,9 @@ function AdminDashboard() {
         try {
             const token = localStorage.getItem('token'); // Retrieve the token
             const res = await axios.get(`${API_URL}/api/admin/users`, {
-                headers: {
-                    Authorization: `Bearer ${token}`, // Include the token in the Authorization header
-                },
-            });
+                headers: { Authorization: `Bearer ${token}` },
+              });
+              
             setUsers(res.data);
         } catch (err) {
             console.error(err);
@@ -57,7 +56,7 @@ function AdminDashboard() {
 
     const fetchReportedComments = async () => {
         try {
-            const res = await axios.get('${API_URL}/api/admin/reported-comments', {
+            const res = await axios.get(`${API_URL}/api/admin/reported-comments`, {
                 headers: { Authorization: `Bearer ${token}` },
             });
             setReportedComments(res.data);
