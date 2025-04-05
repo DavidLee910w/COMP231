@@ -31,6 +31,7 @@ router.post('/:recipeId/comments/:commentId/report', verifyToken, recipeControll
 router.get('/user', verifyToken, recipeController.getUserRecipes);
 router.get('/search', recipeController.searchRecipes);
 router.get('/saved', verifyToken, recipeController.getSavedRecipes);
+router.get('/titles', recipeController.getRecipeTitles);
 router.get('/:id/isSaved', verifyToken, recipeController.isRecipeSaved);
 router.post('/save/:recipeId', verifyToken, recipeController.toggleSaveRecipe);
 router.post('/', verifyToken, upload.single('image'), recipeController.createRecipe);
@@ -39,8 +40,8 @@ router.delete('/:recipeId/comments/:commentId', verifyToken, recipeController.de
 router.put('/:id', verifyToken, isCreatorOrAdmin, upload.single('image'), recipeController.updateRecipe);
 router.delete('/:id', verifyToken, isCreatorOrAdmin, recipeController.deleteRecipe);
 router.post('/:id/comments', verifyToken, recipeController.addComment);
-router.get('/:id', recipeController.getRecipeById);
-router.delete('/:recipeId/comments/:commentId', verifyToken, recipeController.deleteComment);
+
+router.get('/:id', recipeController.getRecipeById);//please keep this at the bottom
 
 
 module.exports = router;
