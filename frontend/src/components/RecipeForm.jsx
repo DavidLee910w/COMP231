@@ -3,7 +3,9 @@ import { useParams, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import SimpleMDE from 'react-simplemde-editor';
 import 'easymde/dist/easymde.min.css';
-import './RecipeForm.css';
+import '../styles/RecipeForm.css';
+
+const API_URL = import.meta.env.VITE_REACT_APP_API_URL;
 
 function RecipeForm() {
     const { id } = useParams(); // Get recipe ID from URL
@@ -19,7 +21,7 @@ function RecipeForm() {
     const [servings, setServings] = useState(null);
     const [cookTime, setCookTime] = useState(null);
     const [prepTime, setPrepTime] = useState(null);
-    
+
     // New states for image upload and preview
     const [imageFile, setImageFile] = useState(null);
     const [imagePreview, setImagePreview] = useState(null);
@@ -33,34 +35,34 @@ function RecipeForm() {
         status: false,
         toolbar: ["bold", "italic", "heading", "|", "unordered-list", "ordered-list", "|", "preview", "guide"],
     }), []);
+
+
+    const handleInstructionsChange = useCallback((value) => {
+        setInstructions(value);
+    }, []);
+    /*
+        // SimpleMDE options
+        const editorOptions = React.useMemo(() => ({
+            autofocus: false,
+            spellChecker: false,
+            placeholder: "Write your recipe instructions here...(each line is a step)",
+            status: false,
+            toolbar: ["bold", "italic", "heading", "|", "unordered-list", "ordered-list", "|", "preview", "guide"],
+            initialValue: instructions,
+        }), []);
     
-
-    const handleInstructionsChange = useCallback((value) => {
-        setInstructions(value);
-    }, []);
-/*
-    // SimpleMDE options
-    const editorOptions = React.useMemo(() => ({
-        autofocus: false,
-        spellChecker: false,
-        placeholder: "Write your recipe instructions here...(each line is a step)",
-        status: false,
-        toolbar: ["bold", "italic", "heading", "|", "unordered-list", "ordered-list", "|", "preview", "guide"],
-        initialValue: instructions,
-    }), []);
-
-    const handleInstructionsChange = useCallback((value) => {
-        setInstructions(value);
-    }, []);
-
-  */
-   useEffect(() => {
+        const handleInstructionsChange = useCallback((value) => {
+            setInstructions(value);
+        }, []);
+    
+      */
+    useEffect(() => {
         if (id) {
             // Fetch recipe details for editing
             const fetchRecipe = async () => {
                 try {
                     const token = localStorage.getItem('token');
-                    const response = await axios.get(`http://localhost:5000/api/recipes/${id}`, {
+                    const response = await axios.get(`${API_URL}/api/recipes/${id}`, {
                         headers: { Authorization: `Bearer ${token}` },
                     });
                     console.log('Recipe:', response.data);
@@ -78,7 +80,7 @@ function RecipeForm() {
 
                     // If there is an image URL stored in the recipe, set it for preview.
                     if (recipe.image) {
-                        setImagePreview(`http://localhost:5000${recipe.image}`);
+                        setImagePreview(`${API_URL}${recipe.image}`);
                     }
                     console.log('Image URL:', recipe.image);
                 } catch (err) {
@@ -133,10 +135,10 @@ function RecipeForm() {
 
             if (id) {
                 // Update existing recipe
-                await axios.put(`http://localhost:5000/api/recipes/${id}`, formData, config);
+                await axios.put(`${API_URL}/api/recipes/${id}`, formData, config);
             } else {
                 // Create new recipe
-                await axios.post('http://localhost:5000/api/recipes', formData, config);
+                await axios.post(`${API_URL}/api/recipes`, formData, config);
             }
             navigate('/recipe/list'); // Redirect to recipe list after saving
         } catch (err) {
@@ -197,7 +199,7 @@ function RecipeForm() {
                     <div className="form-group editor-container">
                         <SimpleMDE
                             value={instructions}
- //                           onChange={setInstructions}
+                            //                           onChange={setInstructions}
                             onChange={handleInstructionsChange}
                             options={editorOptions}
                         />

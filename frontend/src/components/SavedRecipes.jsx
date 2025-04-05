@@ -2,7 +2,9 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { Link } from 'react-router-dom';
-import './SavedRecipes.css'; // Import the CSS file for styling
+import '../styles/SavedRecipes.css';
+
+const API_URL = import.meta.env.VITE_REACT_APP_API_URL;
 
 function SavedRecipes() {
     const [savedRecipes, setSavedRecipes] = useState([]);
@@ -13,7 +15,7 @@ function SavedRecipes() {
         const fetchSavedRecipes = async () => {
             try {
                 const token = localStorage.getItem('token');
-                const res = await axios.get('http://localhost:5000/api/recipes/saved', {
+                const res = await axios.get(`${API_URL}/api/recipes/saved`, {
                     headers: { Authorization: `Bearer ${token}` }
                 });
                 setSavedRecipes(res.data);
@@ -31,7 +33,7 @@ function SavedRecipes() {
     const handleUnsave = async (recipeId) => {
         try {
             const token = localStorage.getItem('token');
-            await axios.post(`http://localhost:5000/api/recipes/save/${recipeId}`, {}, {
+            await axios.post(`${API_URL}/api/recipes/save/${recipeId}`, {}, {
                 headers: { Authorization: `Bearer ${token}` }
             });
             // Update UI instantly by removing recipe from list

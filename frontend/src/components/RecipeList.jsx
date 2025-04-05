@@ -1,7 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { Link, useNavigate } from 'react-router-dom';
-import './RecipeList.css'; // Import the CSS file for styling
+import '../styles/RecipeList.css';
+
+const API_URL = import.meta.env.VITE_REACT_APP_API_URL;
 
 function RecipeList() {
     const [recipes, setRecipes] = useState([]);
@@ -11,7 +13,7 @@ function RecipeList() {
     const fetchUserRecipes = async () => {
         try {
             const token = localStorage.getItem('token');
-            const response = await axios.get('http://localhost:5000/api/recipes/user', {
+            const response = await axios.get(`${API_URL}/api/recipes/user`, {
                 headers: { Authorization: `Bearer ${token}` },
             });
             setRecipes(response.data);
@@ -31,7 +33,7 @@ function RecipeList() {
 
         try {
             const token = localStorage.getItem('token');
-            await axios.delete(`http://localhost:5000/api/recipes/${id}`, {
+            await axios.delete(`${API_URL}/api/recipes/${id}`, {
                 headers: { Authorization: `Bearer ${token}` },
             });
             setRecipes(recipes.filter(recipe => recipe._id !== id));

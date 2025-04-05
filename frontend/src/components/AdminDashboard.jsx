@@ -2,7 +2,8 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { Link, useNavigate } from 'react-router-dom';
-import './AdminDashboard.css';
+import '../styles/AdminDashboard.css';
+const API_URL = import.meta.env.VITE_REACT_APP_API_URL;
 
 function AdminDashboard() {
     const [users, setUsers] = useState([]);
@@ -26,8 +27,11 @@ function AdminDashboard() {
 
     const fetchUsers = async () => {
         try {
-            const res = await axios.get('http://localhost:5000/api/admin/users', {
-                headers: { Authorization: `Bearer ${token}` },
+            const token = localStorage.getItem('token'); // Retrieve the token
+            const res = await axios.get(`${API_URL}/api/admin/users`, {
+                headers: {
+                    Authorization: `Bearer ${token}`, // Include the token in the Authorization header
+                },
             });
             setUsers(res.data);
         } catch (err) {
@@ -38,8 +42,11 @@ function AdminDashboard() {
 
     const fetchRecipes = async () => {
         try {
-            const res = await axios.get('http://localhost:5000/api/recipes/search', {
-                headers: { Authorization: `Bearer ${token}` },
+            const token = localStorage.getItem('token'); // Retrieve the token
+            const res = await axios.get(`${API_URL}/api/recipes/search`, {
+                headers: {
+                    Authorization: `Bearer ${token}`, // Include the token in the Authorization header
+                },
             });
             setRecipes(res.data);
         } catch (err) {
@@ -50,7 +57,7 @@ function AdminDashboard() {
 
     const fetchReportedComments = async () => {
         try {
-            const res = await axios.get('http://localhost:5000/api/admin/reported-comments', {
+            const res = await axios.get('${API_URL}/api/admin/reported-comments', {
                 headers: { Authorization: `Bearer ${token}` },
             });
             setReportedComments(res.data);
@@ -61,7 +68,7 @@ function AdminDashboard() {
 
     const handleDeleteRecipe = async (id) => {
         try {
-            await axios.delete(`http://localhost:5000/api/recipes/${id}`, {
+            await axios.delete(`${API_URL}/api/recipes/${id}`, {
                 headers: { Authorization: `Bearer ${token}` },
             });
             fetchRecipes();
@@ -74,7 +81,7 @@ function AdminDashboard() {
     const handleDeleteComment = async (recipeId, commentId) => {
         if (!window.confirm('Are you sure you want to delete this comment?')) return;
         try {
-            await axios.delete(`http://localhost:5000/api/recipes/${recipeId}/comments/${commentId}`, {
+            await axios.delete(`${API_URL}/api/recipes/${recipeId}/comments/${commentId}`, {
                 headers: { Authorization: `Bearer ${token}` },
             });
             alert('Comment deleted.');
