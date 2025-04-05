@@ -116,6 +116,31 @@ exports.updateRecipe = async (req, res) => {
         res.status(500).json({ msg: 'Server error' });
     }
 };
+// POST /api/recipes/:recipeId/comments/:commentId/report
+exports.reportComment = async (req, res) => {
+    const { recipeId, commentId } = req.params;
+    const userId = req.user._id;
+  
+    try {
+      const recipe = await Recipe.findById(recipeId);
+      if (!recipe) return res.status(404).json({ msg: 'Recipe not found' });
+  
+      if (recipe.createdBy.toString() !== userId.toString()) {
+        return res.status(403).json({ msg: 'Only the recipe owner can report comments' });
+      }
+  
+      const comment = recipe.comments.id(commentId);
+      if (!comment) return res.status(404).json({ msg: 'Comment not found' });
+  
+      comment.reported = true;
+      await recipe.save();
+  
+      res.json({ msg: 'Comment reported successfully' });
+    } catch (err) {
+      console.error(err);
+      res.status(500).json({ msg: 'Server error' });
+    }
+  };
 // DELETE /api/recipes/:id (Delete recipe)
 exports.deleteRecipe = async (req, res) => {
     try {
