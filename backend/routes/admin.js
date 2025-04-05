@@ -24,7 +24,36 @@ router.put('/users/:id/ban', verifyToken, isAdmin, async (req, res) => {
         res.status(500).json({ msg: 'Server error' });
     }
 });
-
+// GET /api/admin/reported-comments
+router.get('/reported-comments', verifyToken, isAdmin, async (req, res) => {
+    try {
+      const recipes = await Recipe.find({ 'comments.reported': true })
+        .populate('comments.username', 'username')
+        .populate('createdBy', 'username');
+  
+      const reportedComments = [];
+  
+      recipes.forEach(recipe => {
+        recipe.comments.forEach(comment => {
+          if (comment.reported) {
+            reportedComments.push({
+              recipeId: recipe._id,
+              recipeTitle: recipe.title,
+              commentId: comment._id,
+              comment: comment.comment,
+              username: comment.username.username,
+              createdAt: comment.createdAt,
+            });
+          }
+        });
+      });
+  
+      res.json(reportedComments);
+    } catch (err) {
+      console.error(err);
+      res.status(500).json({ msg: 'Server error' });
+    }
+  });
 // Delete a user
 router.delete('/users/:id', verifyToken, isAdmin, async (req, res) => {
     try {

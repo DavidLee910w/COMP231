@@ -1,10 +1,9 @@
 import React, { useEffect, useState } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import ReactMarkdown from 'react-markdown';
 import { Helmet } from 'react-helmet';
 import './RecipeDetail.css';
-import { useNavigate } from 'react-router-dom';
 
 // Star rating component
 const StarRating = ({ rating, onRatingChange }) => {
@@ -48,12 +47,15 @@ function RecipeDetail() {
     const [currentPage, setCurrentPage] = useState(1);
     const commentsPerPage = 5;
     const [isAdmin, setIsAdmin] = useState(false);
+    const [isOwner, setIsOwner] = useState(false);
     const navigate = useNavigate();
+    const user = JSON.parse(localStorage.getItem('user') || 'null');
 
     useEffect(() => {
-        // Check if user is admin
-        const user = JSON.parse(localStorage.getItem('user') || 'null');
         if (user && user.admin) {
+            if (user && recipe && recipe.createdBy && recipe.createdBy._id === user._id) {
+                setIsOwner(true);
+            }
             setIsAdmin(true);
         }
 
@@ -61,12 +63,16 @@ function RecipeDetail() {
             try {
                 const res = await axios.get(`http://localhost:5000/api/recipes/${id}`);
                 setRecipe(res.data);
+                if (user && res.data.createdBy && res.data.createdBy._id === user._id) {
+                    setIsOwner(true);
+                }
             } catch (err) {
                 setError('Failed to fetch recipe.');
             } finally {
                 setLoading(false);
             }
         };
+
         const checkIfSaved = async () => {
             try {
                 const token = localStorage.getItem('token');
@@ -167,6 +173,24 @@ function RecipeDetail() {
         } catch (err) {
             console.error('Failed to delete comment:', err);
             alert('Failed to delete review. Please try again.');
+        }
+    };
+    const handleReportComment = async (commentId) => {
+        try {
+            const token = localStorage.getItem('token');
+            await axios.post(
+                `http://localhost:5000/api/recipes/${id}/comments/${commentId}/report`,
+                {},
+                {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                    }
+                }
+            );
+            alert('Comment reported to admin.');
+        } catch (err) {
+            console.error('Failed to report comment:', err);
+            alert('Failed to report comment.');
         }
     };
 
@@ -363,6 +387,15 @@ function RecipeDetail() {
                                                         title="Delete this review"
                                                     >
                                                         <span className="delete-icon">×</span>
+                                                    </button>
+                                                )}
+                                                {isOwner && (
+                                                    <button 
+                                                        className="report-comment-btn"
+                                                        onClick={() => handleReportComment(c._id)}
+                                                        title="Report this comment to admin"
+                                                    >
+                                                        🚩 Report
                                                     </button>
                                                 )}
                                             </div>

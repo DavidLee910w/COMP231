@@ -5,7 +5,8 @@ const CommentSchema = new mongoose.Schema({
     username: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
     comment: { type: String, required: false },
     rating: { type: Number, min: 1, max: 5, required: false },
-    createdAt: { type: Date, default: Date.now }
+    createdAt: { type: Date, default: Date.now },
+    reported: { type: Boolean, default: false }
 });
 
 const RecipeSchema = new mongoose.Schema({
