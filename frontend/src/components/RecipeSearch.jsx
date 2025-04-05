@@ -226,7 +226,8 @@ function RecipeSearch() {
                 <button onClick={handleSearch}>Search</button>
                 <button onClick={handleReset}>Reset</button>
                 <button onClick={sortRecipes}>
-                    {sortOrder === 'asc' ? 'Sort by : oldest to latest' : sortOrder === 'desc' ? 'Sort by : latest to oldest' : 'Sort by : Random'}                </button>
+                    {sortOrder === 'asc' ? 'Sort by : oldest to latest' : sortOrder === 'desc' ? 'Sort by : latest to oldest' : 'Sort by : Random'}
+                </button>
             </div>
 
             <div className="results-container">
