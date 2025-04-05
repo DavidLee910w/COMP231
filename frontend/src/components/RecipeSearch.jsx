@@ -84,13 +84,24 @@ function RecipeSearch() {
                     excludeAllergens: excludeAllergens.join(','),
                 },
             });
-            setRecipes(res.data);
+            
+            const randomizedResults = shuffleArray([...res.data]);
+            setRecipes(randomizedResults);
             setCurrentPage(1); // reset to page 1 after new search
         } catch (err) {
             console.error(err);
         } finally {
             setLoading(false);
         }
+    };
+
+
+    const shuffleArray = (array) => {
+        for (let i = array.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [array[i], array[j]] = [array[j], array[i]]; 
+        }
+        return array;
     };
 
     const handleReset = () => {
