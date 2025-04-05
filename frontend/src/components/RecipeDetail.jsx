@@ -53,9 +53,6 @@ function RecipeDetail() {
 
     useEffect(() => {
         if (user && user.admin) {
-            if (user && recipe && recipe.createdBy && recipe.createdBy._id === user._id) {
-                setIsOwner(true);
-            }
             setIsAdmin(true);
         }
 
