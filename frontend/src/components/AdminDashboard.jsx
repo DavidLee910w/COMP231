@@ -2,7 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { Link, useNavigate } from 'react-router-dom';
-import '../styles/AdminDashboard.css';
+import './AdminDashboard.css';
 const API_URL = import.meta.env.VITE_REACT_APP_API_URL;
 
 function AdminDashboard() {
@@ -27,11 +27,8 @@ function AdminDashboard() {
 
     const fetchUsers = async () => {
         try {
-            const token = localStorage.getItem('token'); // Retrieve the token
-            const res = await axios.get(`${API_URL}/api/admin/users`, {
-                headers: {
-                    Authorization: `Bearer ${token}`, // Include the token in the Authorization header
-                },
+            const res = await axios.get('${API_URL}/api/admin/users', {
+                headers: { Authorization: `Bearer ${token}` },
             });
             setUsers(res.data);
         } catch (err) {
@@ -42,11 +39,8 @@ function AdminDashboard() {
 
     const fetchRecipes = async () => {
         try {
-            const token = localStorage.getItem('token'); // Retrieve the token
-            const res = await axios.get(`${API_URL}/api/recipes/search`, {
-                headers: {
-                    Authorization: `Bearer ${token}`, // Include the token in the Authorization header
-                },
+            const res = await axios.get('${API_URL}/api/recipes/search', {
+                headers: { Authorization: `Bearer ${token}` },
             });
             setRecipes(res.data);
         } catch (err) {
