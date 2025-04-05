@@ -21,6 +21,7 @@ function RecipeSearch() {
     const [suggestions, setSuggestions] = useState([]);
     const recipesPerPage = 10; //max 10 recipes per page
     const inputRef = useRef(null);
+    const [sortOrder, setSortOrder] = useState('asc'); // 'asc' for ascending, 'desc' for descending
 
     // Close suggestions when clicking outside
     useEffect(() => {
@@ -113,6 +114,18 @@ function RecipeSearch() {
         setCurrentPage(pageNum);
     };
 
+    const sortRecipes = () => {
+        const sortedRecipes = [...recipes].sort((a, b) => {
+            if (sortOrder === 'asc') {
+                return new Date(a.createdAt) - new Date(b.createdAt);
+            } else {
+                return new Date(b.createdAt) - new Date(a.createdAt);
+            }
+        });
+        setRecipes(sortedRecipes);
+        setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc'); // Toggle sort order
+    };
+
     return (
         <div className="search-container">
             <Helmet>
@@ -182,6 +195,9 @@ function RecipeSearch() {
             <div className="button-group">
                 <button onClick={handleSearch}>Search</button>
                 <button onClick={handleReset}>Reset</button>
+                <button onClick={sortRecipes}>
+                    Sort by Creation Time ({sortOrder === 'asc' ? 'Ascending' : 'Descending'})
+                </button>
             </div>
 
             <div className="results-container">
