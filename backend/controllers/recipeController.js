@@ -32,9 +32,6 @@ exports.searchRecipes = async (req, res) => {
 exports.createRecipe = async (req, res) => {
     try {
         const { title, description, ingredients } = req.body;
-//        const servings = parseInt(req.body.servings, 10);
-//        const cookTime = parseInt(req.body.cookTime, 10);
-//        const prepTime = parseInt(req.body.prepTime, 10);
 
         const safeIngredients = JSON.parse(req.body.ingredients || '[]');
         const steps = JSON.parse(req.body.steps || '[]');
@@ -297,8 +294,7 @@ exports.getUserRecipes = async (req, res) => {
     }
 };
 
-// Saved recipes of the user
-// POST /api/users/save/:recipeId (save or unsave a recipe)
+// Saved recipes of the user, POST /api/users/save/:recipeId (save or unsave a recipe)
 exports.toggleSaveRecipe = async (req, res) => {
     const userId = req.user._id;
     const recipeId = req.params.recipeId;

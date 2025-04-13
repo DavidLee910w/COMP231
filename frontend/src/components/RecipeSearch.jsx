@@ -178,8 +178,6 @@ function RecipeSearch() {
                     onChange={handleInputChange}
                     className="search-input"
                 />
-                {/* for debugging */}
-                {/* <p style={{ color: 'red' }}>Suggestions: {JSON.stringify(suggestions)}</p> */}
                 {suggestions.length > 0 && (
                     <ul className="suggestion-list">
                         {suggestions.map((s, i) => (

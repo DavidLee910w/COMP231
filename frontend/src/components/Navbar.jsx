@@ -15,7 +15,7 @@ function Navbar() {
     return (
         <nav className="navbar">
             <div className="navbar-brand">
-                <img src={logoIcon} alt="Logo" className="navbar-icon" /> {/* Add the icon */}
+                <img src={logoIcon} alt="Logo" className="navbar-icon" /> 
                 <Link to="/">Dishcovery</Link>
             </div>
             <div className="navbar-menu">

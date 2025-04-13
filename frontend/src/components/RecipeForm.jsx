@@ -40,22 +40,6 @@ function RecipeForm() {
     const handleInstructionsChange = useCallback((value) => {
         setInstructions(value);
     }, []);
-    /*
-        // SimpleMDE options
-        const editorOptions = React.useMemo(() => ({
-            autofocus: false,
-            spellChecker: false,
-            placeholder: "Write your recipe instructions here...(each line is a step)",
-            status: false,
-            toolbar: ["bold", "italic", "heading", "|", "unordered-list", "ordered-list", "|", "preview", "guide"],
-            initialValue: instructions,
-        }), []);
-    
-        const handleInstructionsChange = useCallback((value) => {
-            setInstructions(value);
-        }, []);
-    
-      */
     useEffect(() => {
         if (id) {
             // Fetch recipe details for editing
@@ -199,7 +183,6 @@ function RecipeForm() {
                     <div className="form-group editor-container">
                         <SimpleMDE
                             value={instructions}
-                            //                           onChange={setInstructions}
                             onChange={handleInstructionsChange}
                             options={editorOptions}
                         />
