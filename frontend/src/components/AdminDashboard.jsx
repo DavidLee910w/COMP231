@@ -76,6 +76,20 @@ function AdminDashboard() {
             setError('Failed to delete recipe.');
         }
     };
+    const handleDeleteUser = async (userId) => {
+        if (!window.confirm('Are you sure you want to delete this user?')) return;
+        try {
+            const res = await axios.delete(`${API_URL}/api/admin/users/${userId}`, {
+                headers: { Authorization: `Bearer ${token}` },
+            });
+            alert(res.data.msg); // Show success message
+            fetchUsers(); // Refresh the user list
+        } catch (err) {
+            console.error(err);
+            setError('Failed to delete user.');
+        }
+    };
+    
     const handleToggleDisableUser = async (userId) => {
         try {
             const res = await axios.put(`${API_URL}/api/admin/users/${userId}/ban`, {}, {
